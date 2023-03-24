@@ -1,57 +1,108 @@
 const fontsConfig = {
-  web: {
-    regular: {
-      fontFamily: 'sans-serif',
-      fontWeight: 'normal',
-    },
-    medium: {
-      fontFamily: 'sans-serif-medium',
-      fontWeight: 'normal',
-    },
-    light: {
-      fontFamily: 'sans-serif-light',
-      fontWeight: 'normal',
-    },
-    thin: {
-      fontFamily: 'sans-serif-thin',
-      fontWeight: 'normal',
-    },
+  displaySmall: {
+    fontFamily: 'PlusJakartaSans-Bold',
+    fontSize: 36,
+    fontWeight: '400',
+    letterSpacing: 0,
+    lineHeight: 44,
   },
-  ios: {
-    regular: {
-      fontFamily: 'PlusJakarta-Medium',
-      fontWeight: 'normal',
-    },
-    medium: {
-      fontFamily: 'PlusJakarta-Medium',
-      fontWeight: 'normal',
-    },
-    light: {
-      fontFamily: 'PlusJakartaSans-Light',
-      fontWeight: 'normal',
-    },
-    thin: {
-      fontFamily: 'PlusJakartaSans-ExtraLight',
-      fontWeight: 'normal',
-    },
+  displayMedium: {
+    fontFamily: 'PlusJakartaSans-Bold',
+    fontSize: 45,
+    fontWeight: '400',
+    letterSpacing: 0,
+    lineHeight: 52,
   },
-  android: {
-    regular: {
-      fontFamily: 'PlusJakartaSans-Medium',
-      fontWeight: 'normal',
-    },
-    medium: {
-      fontFamily: 'PlusJakartaSans-Medium',
-      fontWeight: 'normal',
-    },
-    light: {
-      fontFamily: 'PlusJakartaSans-Light',
-      fontWeight: 'normal',
-    },
-    thin: {
-      fontFamily: 'PlusJakartaSans-ExtraLight',
-      fontWeight: 'normal',
-    },
+  displayLarge: {
+    fontFamily: 'PlusJakartaSans-ExtraBold',
+    fontSize: 57,
+    fontWeight: '400',
+    letterSpacing: 0,
+    lineHeight: 64,
+  },
+  headlineSmall: {
+    fontFamily: 'PlusJakartaSans-Medium',
+    fontSize: 24,
+    fontWeight: '400',
+    letterSpacing: 0,
+    lineHeight: 32,
+  },
+  headlineMedium: {
+    fontFamily: 'PlusJakartaSans-Medium',
+    fontSize: 28,
+    fontWeight: '400',
+    letterSpacing: 0,
+    lineHeight: 36,
+  },
+  headlineLarge: {
+    fontFamily: 'PlusJakartaSans-Bold',
+    fontSize: 32,
+    fontWeight: '400',
+    letterSpacing: 0,
+    lineHeight: 40,
+  },
+  bodySmall: {
+    fontFamily: 'PlusJakartaSans-bold',
+    fontSize: 12,
+    fontWeight: '400',
+    letterSpacing: 0.4,
+    lineHeight: 16,
+  },
+  bodyMedium: {
+    fontFamily: 'PlusJakartaSans-Regular',
+    fontSize: 14,
+    fontWeight: '400',
+    letterSpacing: 0.25,
+    lineHeight: 20,
+  },
+  bodyLarge: {
+    fontFamily: 'PlusJakartaSans-Light',
+    fontSize: 16,
+    fontWeight: '400',
+    letterSpacing: 0.15,
+    lineHeight: 24,
+  },
+  titleSmall: {
+    fontFamily: 'PlusJakartaSans-Medium',
+    fontSize: 14,
+    fontWeight: '500',
+    letterSpacing: 0.1,
+    lineHeight: 20,
+  },
+  titleMedium: {
+    fontFamily: 'PlusJakartaSans-Medium',
+    fontSize: 16,
+    fontWeight: '500',
+    letterSpacing: 0.15,
+    lineHeight: 24,
+  },
+  titleLarge: {
+    fontFamily: 'PlusJakartaSans-Medium',
+    fontSize: 22,
+    fontWeight: '400',
+    letterSpacing: 0,
+    lineHeight: 28,
+  },
+  labelSmall: {
+    fontFamily: 'PlusJakartaSans-Regular',
+    fontSize: 11,
+    fontWeight: '500',
+    letterSpacing: 0.5,
+    lineHeight: 16,
+  },
+  labelMedium: {
+    fontFamily: 'PlusJakartaSans-Regular',
+    fontSize: 12,
+    fontWeight: '500',
+    letterSpacing: 0.5,
+    lineHeight: 16,
+  },
+  labelLarge: {
+    fontFamily: 'PlusJakartaSans-Regular',
+    fontSize: 14,
+    fontWeight: '500',
+    letterSpacing: 0.1,
+    lineHeight: 20,
   },
 };
 

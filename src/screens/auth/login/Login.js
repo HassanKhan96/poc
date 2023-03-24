@@ -6,10 +6,10 @@ import {TouchableOpacity, View} from 'react-native';
 import globalColors from '../../../styles/colors';
 import {AuthContainer} from '../AuthContainer';
 
-const LoginForm = () => {
+const Login = ({navigation}) => {
   return (
     <AuthContainer>
-      <Text style={styles.sectionHeader}>Login</Text>
+      <Text variant="headlineLarge">Login</Text>
       <View>
         <TextInput
           style={defaultStyles.inputText}
@@ -32,8 +32,12 @@ const LoginForm = () => {
         <Button mode="contained">Login</Button>
         <View style={styles.suggestionSection}>
           <Text> Don't have an account?</Text>
-          <TouchableOpacity style={{marginLeft: 5}}>
-            <Text style={defaultStyles.linkColor}>Register</Text>
+          <TouchableOpacity
+            style={{marginLeft: 5}}
+            onPress={() => navigation.navigate('Register')}>
+            <Text variant="bodyLarge" style={defaultStyles.linkColor}>
+              Register
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -41,4 +45,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default Login;

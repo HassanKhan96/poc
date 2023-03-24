@@ -12,10 +12,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   topSectionText: {
-    fontSize: 22,
-    fontWeight: '100',
-    marginTop: 5,
-    fontFamily: 'PlusJakartaSan-ExtraLight',
     color: globalColors.white,
   },
   inputSection: {

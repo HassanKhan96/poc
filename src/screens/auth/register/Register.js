@@ -6,10 +6,10 @@ import {TouchableOpacity, View} from 'react-native';
 import globalColors from '../../../styles/colors';
 import {AuthContainer} from '../AuthContainer';
 
-const Register = () => {
+const Register = ({navigation}) => {
   return (
     <AuthContainer>
-      <Text style={styles.sectionHeader}>Register</Text>
+      <Text variant="headlineLarge">Register</Text>
       <View>
         <TextInput
           style={defaultStyles.inputText}
@@ -35,12 +35,18 @@ const Register = () => {
           right={<TextInput.Icon icon={'eye'} />}
         />
       </View>
+
       <View style={styles.buttonSection}>
-        <Button mode="contained">Login</Button>
+        <Button mode="contained">Register</Button>
+
         <View style={styles.suggestionSection}>
           <Text>Already have an account?</Text>
-          <TouchableOpacity style={{marginLeft: 5}}>
-            <Text style={defaultStyles.linkColor}>Login</Text>
+          <TouchableOpacity
+            style={{marginLeft: 5}}
+            onPress={() => navigation.navigate('Login')}>
+            <Text variant="bodyLarge" style={defaultStyles.linkColor}>
+              Login
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

@@ -9,7 +9,9 @@ export const AuthContainer = ({children}) => {
     <View style={styles.container}>
       <View style={styles.topSection}>
         <Icons name="dinner-dining" size={75} color={'#fff'} />
-        <Text style={styles.topSectionText}>POC App</Text>
+        <Text variant="titleLarge" style={styles.topSectionText}>
+          POC App
+        </Text>
       </View>
       <View style={styles.inputSection}>{children}</View>
     </View>

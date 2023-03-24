@@ -16,6 +16,7 @@ import {
 import globalColors from './src/styles/colors';
 import fontsConfig from './src/styles/font';
 import Register from './src/screens/auth/register/Register';
+import Navigator from './src/navigation/Navigator';
 
 // type SectionProps = PropsWithChildren<{
 //   title: string;
@@ -54,13 +55,13 @@ const theme = {
     primary: globalColors.primary,
     secondary: globalColors.secondary,
   },
-  // fonts: configureFonts({config: fontsConfig, isV3: true}),
+  fonts: configureFonts({config: fontsConfig}),
 };
 
 function App() {
   return (
     <PaperProvider theme={theme}>
-      <Register />
+      <Navigator />
     </PaperProvider>
   );
 }
