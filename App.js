@@ -6,17 +6,29 @@
  */
 
 import React from 'react';
-import {View} from 'react-native';
+import {ActivityIndicator, View} from 'react-native';
 import Login from './src/screens/auth/login/Login';
 import {
+  Button,
   configureFonts,
   MD3LightTheme,
   Provider as PaperProvider,
+  Text,
 } from 'react-native-paper';
 import globalColors from './src/styles/colors';
 import fontsConfig from './src/styles/font';
 import Register from './src/screens/auth/register/Register';
 import Navigator from './src/navigation/Navigator';
+import {realmContext} from './src/context/RealmContext';
+import {AppProvider, UserProvider} from '@realm/react';
+import config from './config';
+import AuthNavigator from './src/navigation/navigators/AuthNavigator';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
+import Tables from './src/screens/table/Tables';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import TabNavigator from './src/navigation/navigators/TabNavigator';
+import Loading from './src/components/Loading';
 
 // type SectionProps = PropsWithChildren<{
 //   title: string;
@@ -48,6 +60,7 @@ import Navigator from './src/navigation/Navigator';
 //   );
 // }
 
+const {RealmProvider} = realmContext;
 const theme = {
   ...MD3LightTheme,
   colors: {
@@ -58,12 +71,33 @@ const theme = {
   fonts: configureFonts({config: fontsConfig}),
 };
 
-function App() {
+const AppWrapper = () => {
   return (
     <PaperProvider theme={theme}>
-      <Navigator />
+      <AppProvider id={config.appId} baseUrl={config.baseUrl}>
+        <UserProvider fallback={AuthNavigator}>
+          <RealmProvider
+            sync={{
+              flexible: true,
+              onError: (_, error) => {
+                console.log(error);
+              },
+            }}
+            fallback={<Loading />}>
+            <App />
+          </RealmProvider>
+        </UserProvider>
+      </AppProvider>
     </PaperProvider>
   );
-}
+};
 
-export default App;
+const App = () => {
+  return (
+    <NavigationContainer>
+      <TabNavigator />
+    </NavigationContainer>
+  );
+};
+
+export default AppWrapper;
