@@ -11,7 +11,7 @@ import {
 import {FlatList, Pressable, View} from 'react-native';
 import menuStyles from './styles';
 import globalColors from '../../styles/colors';
-import {useState} from 'react';
+import {useState, memo} from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
 
 const MenuItems = ({menuItems, categories}) => {
@@ -129,4 +129,4 @@ const MenuItems = ({menuItems, categories}) => {
   );
 };
 
-export default MenuItems;
+export default memo(MenuItems);

@@ -1,19 +1,28 @@
-import {FlatList, View} from 'react-native';
-import {
-  Button,
-  Card,
-  IconButton,
-  List,
-  Text,
-  TextInput,
-} from 'react-native-paper';
-import menuStyles from './styles';
-import styles from '../../styles/defualt.styles';
-import globalColors from '../../styles/colors';
+import {View, useWindowDimensions} from 'react-native';
+import {useState} from 'react';
+import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import Category from './Category';
 import MenuItems from './MenuItems';
+import globalColors from '../../styles/colors';
+
+const renderTabBar = props => (
+  <TabBar
+    {...props}
+    indicatorStyle={{backgroundColor: globalColors.primary}}
+    style={{backgroundColor: globalColors.white}}
+    activeColor={globalColors.primary}
+    inactiveColor={globalColors.darkGray}
+  />
+);
 
 const Menu = () => {
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    {key: 'items', title: 'Items'},
+    {key: 'categories', title: 'Categories'},
+  ]);
+  const layout = useWindowDimensions();
+
   const categories = [
     {
       key: '1',
@@ -102,7 +111,32 @@ const Menu = () => {
       takeAwayPrice: 10,
     },
   ];
-  return <MenuItems menuItems={menuItems} categories={categories} />;
+
+  const renderScene = ({route, jumpTo}) => {
+    switch (route.key) {
+      case 'categories':
+        return <Category jumpTo={jumpTo} categories={categories} />;
+      case 'items':
+        return (
+          <MenuItems
+            jumpTo={jumpTo}
+            categories={categories}
+            menuItems={menuItems}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+  return (
+    <TabView
+      navigationState={{index, routes}}
+      renderScene={renderScene}
+      onIndexChange={setIndex}
+      initialLayout={{width: layout.width}}
+      renderTabBar={renderTabBar}
+    />
+  );
 };
 
 export default Menu;

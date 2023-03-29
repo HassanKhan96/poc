@@ -25,8 +25,8 @@ const menuStyles = StyleSheet.create({
     alignItems: 'center',
   },
   itemContainer: {
-    paddingVertical: 5,
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
   },
   listContainer: {
