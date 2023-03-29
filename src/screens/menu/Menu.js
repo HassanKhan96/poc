@@ -1,8 +1,17 @@
 import {FlatList, View} from 'react-native';
-import {Button, Card, IconButton, List, Text} from 'react-native-paper';
+import {
+  Button,
+  Card,
+  IconButton,
+  List,
+  Text,
+  TextInput,
+} from 'react-native-paper';
 import menuStyles from './styles';
 import styles from '../../styles/defualt.styles';
 import globalColors from '../../styles/colors';
+import Category from './Category';
+import MenuItems from './MenuItems';
 
 const Menu = () => {
   const categories = [
@@ -35,63 +44,40 @@ const Menu = () => {
       name: 'Indian',
     },
   ];
+  const menuItems = [
+    {
+      key: '1',
+      name: 'Biryani',
+      category: 'Indian Food',
+      price: 10,
+      takeAwayPrice: 15,
+    },
+    {
+      key: '2',
+      name: 'Palak Paneer',
+      category: 'Indian Food',
+      price: 7,
+      takeAwayPrice: 12,
+    },
+    {
+      key: '3',
+      name: 'Daal Makhani',
+      category: 'Indian Food',
+      price: 5,
+      takeAwayPrice: 10,
+    },
+    {
+      key: '4',
+      name: 'Pao Bhaji',
+      category: 'Indian Food',
+      price: 5,
+      takeAwayPrice: 10,
+    },
+  ];
   return (
     <View style={[styles.container, menuStyles.container]}>
-      <View style={menuStyles.categorySection}>
-        <Card style={menuStyles.categoryCard}>
-          <Card.Title
-            title="Category"
-            right={() => <Button icon="plus-box">Add</Button>}
-          />
-          <Card.Content
-            style={{
-              paddingLeft: 0,
-              paddingRight: 0,
-              height: '100%',
-              flexGrow: 1,
-              flexShrink: 1,
-            }}>
-            <FlatList
-              data={categories}
-              style={{width: '100%'}}
-              renderItem={({item, index}) => {
-                return (
-                  <List.Item
-                    style={{
-                      paddingRight: 5,
-                      paddingLeft: 0,
-                      paddingBottom: 0,
-                      paddingTop: 0,
-                      justifyContent: 'space-between',
-                    }}
-                    title={item.name}
-                    right={({color, style}) => {
-                      return (
-                        <View
-                          style={{
-                            flexDirection: 'row',
-                          }}>
-                          <IconButton
-                            icon={'pencil'}
-                            style={{marginRight: 0, padding: 0}}
-                            iconColor={globalColors.primary}
-                          />
-                          <IconButton
-                            icon={'trash-can'}
-                            style={{marginLeft: 5, padding: 0, marginRight: 0}}
-                            iconColor={globalColors.danger}
-                          />
-                        </View>
-                      );
-                    }}
-                  />
-                );
-              }}
-              keyExtractor={item => item.key}
-            />
-          </Card.Content>
-        </Card>
-      </View>
+      {/* <Category categories={categories} /> */}
+      <MenuItems menuItems={menuItems} />
     </View>
   );
 };

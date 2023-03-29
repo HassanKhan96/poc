@@ -11,7 +11,10 @@ const menuStyles = StyleSheet.create({
   },
   categoryCard: {
     backgroundColor: globalColors.white,
-    maxHeight: 260,
+    maxHeight: 310,
+  },
+  categoryField: {
+    paddingHorizontal: 10,
   },
   categoryList: {
     width: '100%',
