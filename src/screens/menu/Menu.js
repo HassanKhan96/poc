@@ -73,13 +73,36 @@ const Menu = () => {
       price: 5,
       takeAwayPrice: 10,
     },
+    {
+      key: '5',
+      name: 'Daal Makhani',
+      category: 'Indian Food',
+      price: 5,
+      takeAwayPrice: 10,
+    },
+    {
+      key: '6',
+      name: 'Pao Bhaji',
+      category: 'Indian Food',
+      price: 5,
+      takeAwayPrice: 10,
+    },
+    {
+      key: '7',
+      name: 'Daal Makhani',
+      category: 'Indian Food',
+      price: 5,
+      takeAwayPrice: 10,
+    },
+    {
+      key: '8',
+      name: 'Pao Bhaji',
+      category: 'Indian Food',
+      price: 5,
+      takeAwayPrice: 10,
+    },
   ];
-  return (
-    <View style={[styles.container, menuStyles.container]}>
-      {/* <Category categories={categories} /> */}
-      <MenuItems menuItems={menuItems} />
-    </View>
-  );
+  return <MenuItems menuItems={menuItems} categories={categories} />;
 };
 
 export default Menu;

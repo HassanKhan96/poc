@@ -3,102 +3,120 @@ import {
   Card,
   IconButton,
   List,
+  Menu,
+  Searchbar,
   Text,
   TextInput,
 } from 'react-native-paper';
-import {FlatList, View} from 'react-native';
+import {FlatList, Pressable, View} from 'react-native';
 import menuStyles from './styles';
 import globalColors from '../../styles/colors';
+import {useState} from 'react';
+import Icon from 'react-native-vector-icons/AntDesign';
 
-const MenuItems = ({menuItems}) => {
+const MenuItems = ({menuItems, categories}) => {
+  const [showMenu, setShowMenu] = useState(false);
+  const [filterCategory, setFilterCategory] = useState('All');
+  const onSelectCategory = category => {
+    setFilterCategory(category);
+    setShowMenu(false);
+  };
   return (
-    <View style={menuStyles.categorySection}>
+    <View style={menuStyles.container}>
       {/* <Card style={menuStyles.categoryCard}> */}
-      <Card.Title
-        title="Items"
-        titleStyle={{fontWeight: '600'}}
-        right={() => (
-          <IconButton icon="plus-box" iconColor={globalColors.green} />
-        )}
-      />
+
       <View style={menuStyles.categoryField}>
         <TextInput
           mode="outlined"
           style={{backgroundColor: globalColors.white}}
           label="Search"
           outlineColor={globalColors.gray}
-          right={
-            <TextInput.Icon icon="magnify" iconColor={globalColors.gray} />
-          }
+          left={<TextInput.Icon icon="magnify" iconColor={globalColors.gray} />}
         />
       </View>
-      <Card.Content
-        style={{
-          paddingLeft: 5,
-          paddingRight: 5,
-          marginTop: 5,
-          flexGrow: 1,
-          flexShrink: 1,
-        }}>
+      <View style={menuStyles.itemFilterContainer}>
+        <Text variant="labelLarge">Category</Text>
+        <Pressable onPress={() => setShowMenu(true)}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              height: 30,
+              minWidth: 100,
+            }}>
+            <Text variant="labelMedium" style={{marginRight: 5}}>
+              {filterCategory}
+            </Text>
+            <Menu
+              visible={showMenu}
+              anchor={
+                <Pressable onPress={() => setShowMenu(true)}>
+                  <Icon
+                    name="caretdown"
+                    size={18}
+                    color={globalColors.gray800}
+                  />
+                </Pressable>
+              }
+              onDismiss={() => setShowMenu(false)}>
+              <Menu.Item title="All" onPress={() => onSelectCategory('All')} />
+              {categories.map(category => {
+                return (
+                  <Menu.Item
+                    key={category.key}
+                    title={category?.name}
+                    onPress={() => onSelectCategory(category?.name)}
+                  />
+                );
+              })}
+            </Menu>
+          </View>
+        </Pressable>
+      </View>
+      <Card.Content style={menuStyles.listContainer}>
         <FlatList
           data={menuItems}
-          style={{width: '100%'}}
+          style={{flex: 1}}
           showsVerticalScrollIndicator={true}
           renderItem={({item, index}) => {
             return (
-              <Card
-                style={{
-                  marginVertical: 5,
-                  backgroundColor: globalColors.white,
-                  borderWidth: 1,
-                }}
-                // title={item.name}
-                // description={`Price: £${item.price}`}
-                // right={({color, style}) => {
-                //   return (
-                //     <View
-                //       style={{
-                //         flexDirection: 'row',
-                //       }}>
-                //       <IconButton
-                //         icon={'pencil'}
-                //         style={{marginRight: 0, padding: 0}}
-                //         iconColor={globalColors.primary}
-                //       />
-                //       <IconButton
-                //         icon={'trash-can'}
-                //         style={{marginLeft: 5, padding: 0, marginRight: 0}}
-                //         iconColor={globalColors.danger}
-                //       />
-                //     </View>
-                //   );
-                // }}
-              >
-                <View style={{flex: 1, flexDirection: 'row'}}>
-                  <Card.Title
-                    style={{borderWidth: 1}}
-                    subtitleStyle={{color: '#999'}}
-                    title={item.name}
-                    subtitle={item.category}
-                  />
-                  <Card.Content style={{borderWidth: 1}}>
-                    <Text>Price: £{item.price}</Text>
-                  </Card.Content>
-                  <Card.Actions style={{borderWidth: 1}}>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                      }}>
+              <Card style={menuStyles.itemCard}>
+                <View style={menuStyles.itemContainer}>
+                  <View style={menuStyles.itemInfoContainer}>
+                    <Text variant="titleMedium">{item?.name}</Text>
+
+                    <Text style={{marginBottom: 10}} variant="labelLarge">
+                      Price: £{item?.price}
+                    </Text>
+
+                    <Text
+                      variant="bodySmall"
+                      style={{color: globalColors.darkGray}}>
+                      Take away: £{item?.takeAwayPrice}
+                    </Text>
+                  </View>
+                  <View style={menuStyles.itemActionContainer}>
+                    <Text
+                      variant="labelLarge"
+                      style={{marginBottom: 7, color: globalColors.darkGray}}>
+                      {item?.category}
+                    </Text>
+                    <View style={{flexDirection: 'row'}}>
                       <IconButton
                         icon={'pencil'}
+                        style={menuStyles.itemActionBtn}
+                        size={20}
                         iconColor={globalColors.primary}
                       />
                       <IconButton
+                        size={20}
                         icon={'trash-can'}
+                        style={menuStyles.itemActionBtn}
                         iconColor={globalColors.danger}
                       />
                     </View>
-                  </Card.Actions>
+                  </View>
                 </View>
               </Card>
             );
