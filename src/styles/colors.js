@@ -5,7 +5,7 @@ const globalColors = {
   success: '84d76b',
   white: '#ffffff',
   gray: 'd5dae0',
-  danger: '#cf2b57',
+  danger: '#f5386b',
 };
 
 export default globalColors;

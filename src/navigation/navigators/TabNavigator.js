@@ -2,16 +2,21 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Tables from '../../screens/table/Tables';
 import Icons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {fontSize} from '@mui/system';
-import {Text, Button, Menu} from 'react-native-paper';
+import {Text, Button} from 'react-native-paper';
+import Menu from '../../screens/menu/Menu';
 import {useUser} from '@realm/react';
 import Order from '../../screens/order/Order';
 import Profile from '../../screens/profile/Profile';
+import globalColors from '../../styles/colors';
 
 const Tab = createBottomTabNavigator();
 const TabNavigator = () => {
   const user = useUser();
   return (
     <Tab.Navigator
+      // sceneContainerStyle={{
+      //   backgroundColor: globalColors.secondary,
+      // }}
       screenOptions={{
         headerRight: () => (
           <Button onPress={() => user?.logOut()}>Logout</Button>

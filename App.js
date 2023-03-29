@@ -29,6 +29,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import TabNavigator from './src/navigation/navigators/TabNavigator';
 import Loading from './src/components/Loading';
+import Menu from './src/screens/menu/Menu';
 
 // type SectionProps = PropsWithChildren<{
 //   title: string;
@@ -97,6 +98,7 @@ const App = () => {
     <NavigationContainer>
       <TabNavigator />
     </NavigationContainer>
+    // <Menu />
   );
 };
 
