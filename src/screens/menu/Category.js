@@ -9,9 +9,65 @@ import {
 import {FlatList, View} from 'react-native';
 import menuStyles from './styles';
 import globalColors from '../../styles/colors';
-import {memo} from 'react';
+import {memo, useCallback, useEffect, useState} from 'react';
+import {useUser} from '@realm/react';
+import {realmContext} from '../../context/RealmContext';
+import {CategoryModal} from '../../schema/categorySchema';
 
 const Category = ({categories}) => {
+  console.log(categories);
+  const {useRealm} = realmContext;
+  const user = useUser();
+  const realm = useRealm();
+  const [newCategory, setNewCategory] = useState('');
+
+  useEffect(() => {
+    realm.subscriptions.update(mutableSubs => {
+      mutableSubs.add(realm.objects(CategoryModal), {name: 'categories'});
+    });
+  }, []);
+
+  const addCategory = useCallback(
+    name => {
+      const existingCategory = realm
+        .objects(CategoryModal)
+        .filtered('name == $0', name);
+      console.log(existingCategory);
+      if (existingCategory.length) return;
+
+      realm.write(() => {
+        return new CategoryModal(realm, {
+          userId: user?.id,
+          name,
+        });
+      });
+    },
+    [user, realm],
+  );
+
+  const deleteCategory = useCallback(
+    name => {
+      const category = realm.objectForPrimaryKey(CategoryModal, name);
+      if (category) {
+        realm.write(() => {
+          realm.delete(categories);
+        });
+      }
+    },
+    [user, realm],
+  );
+
+  const updateCategory = useCallback(
+    name => {
+      const category = realm.objectForPrimaryKey(CategoryModal, name);
+      if (category) {
+        realm.write(() => {
+          category.name = name;
+        });
+      }
+    },
+    [user, realm],
+  );
   return (
     <View style={menuStyles.container}>
       {/* <Card style={menuStyles.categoryCard}> */}
@@ -21,8 +77,14 @@ const Category = ({categories}) => {
           style={{backgroundColor: globalColors.white, fontSize: 13}}
           label="Add Category"
           outlineColor={globalColors.gray}
+          value={newCategory}
+          onChangeText={text => setNewCategory(text)}
           right={
-            <TextInput.Icon icon="plus-box" iconColor={globalColors.green} />
+            <TextInput.Icon
+              icon="plus-box"
+              iconColor={globalColors.green}
+              onPress={() => addCategory(newCategory)}
+            />
           }
         />
       </View>
@@ -41,9 +103,9 @@ const Category = ({categories}) => {
           showsVerticalScrollIndicator={true}
           renderItem={({item, index}) => {
             return (
-              <Card style={menuStyles.itemCard}>
+              <Card style={menuStyles.itemCard} mode="contained">
                 <View style={menuStyles.itemContainer}>
-                  <Text variant="titleMedium">{item?.name}</Text>
+                  <Text variant="titleSmall">{item?.name}</Text>
                   <View style={menuStyles.itemActionContainer}>
                     <View
                       style={{

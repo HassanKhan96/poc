@@ -17,10 +17,12 @@ import Icon from 'react-native-vector-icons/AntDesign';
 const MenuItems = ({menuItems, categories}) => {
   const [showMenu, setShowMenu] = useState(false);
   const [filterCategory, setFilterCategory] = useState('All');
+
   const onSelectCategory = category => {
     setFilterCategory(category);
     setShowMenu(false);
   };
+
   return (
     <View style={menuStyles.container}>
       {/* <Card style={menuStyles.categoryCard}> */}
@@ -28,7 +30,7 @@ const MenuItems = ({menuItems, categories}) => {
       <View style={menuStyles.categoryField}>
         <TextInput
           mode="outlined"
-          style={{backgroundColor: globalColors.white}}
+          style={{backgroundColor: globalColors.white, fontSize: 13}}
           label="Search"
           outlineColor={globalColors.gray}
           left={<TextInput.Icon icon="magnify" iconColor={globalColors.gray} />}
@@ -77,16 +79,16 @@ const MenuItems = ({menuItems, categories}) => {
       <Card.Content style={menuStyles.listContainer}>
         <FlatList
           data={menuItems}
-          style={{flex: 1}}
+          style={{flex: 1, marginBottom: 10}}
           showsVerticalScrollIndicator={true}
           renderItem={({item, index}) => {
             return (
-              <Card style={menuStyles.itemCard}>
+              <Card style={menuStyles.itemCard} mode="contained">
                 <View style={menuStyles.itemContainer}>
                   <View style={menuStyles.itemInfoContainer}>
-                    <Text variant="titleMedium">{item?.name}</Text>
+                    <Text variant="titleSmall">{item?.name}</Text>
 
-                    <Text style={{marginBottom: 10}} variant="labelLarge">
+                    <Text style={{marginBottom: 10}} variant="labelMedium">
                       Price: £{item?.price}
                     </Text>
 
@@ -98,7 +100,7 @@ const MenuItems = ({menuItems, categories}) => {
                   </View>
                   <View style={menuStyles.itemActionContainer}>
                     <Text
-                      variant="labelLarge"
+                      variant="labelMedium"
                       style={{marginBottom: 7, color: globalColors.darkGray}}>
                       {item?.category}
                     </Text>

@@ -4,6 +4,9 @@ import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import Category from './Category';
 import MenuItems from './MenuItems';
 import globalColors from '../../styles/colors';
+import {realmContext} from '../../context/RealmContext';
+import {useUser} from '@realm/react';
+import {CategoryModal} from '../../schema/categorySchema';
 
 const renderTabBar = props => (
   <TabBar
@@ -16,6 +19,11 @@ const renderTabBar = props => (
 );
 
 const Menu = () => {
+  const {useQuery} = realmContext;
+  const user = useUser();
+  const categories = useQuery(CategoryModal)
+    .filtered(`userId == "${user.id}"`)
+    .sorted('createdAt');
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     {key: 'items', title: 'Items'},
@@ -23,36 +31,37 @@ const Menu = () => {
   ]);
   const layout = useWindowDimensions();
 
-  const categories = [
-    {
-      key: '1',
-      name: 'Sea Food',
-    },
-    {
-      key: '2',
-      name: 'Fast Food',
-    },
-    {
-      key: '3',
-      name: 'Chinese',
-    },
-    {
-      key: '4',
-      name: 'Italian',
-    },
-    {
-      key: '5',
-      name: 'Rice',
-    },
-    {
-      key: '6',
-      name: 'Maxican',
-    },
-    {
-      key: '7',
-      name: 'Indian',
-    },
-  ];
+  // const categories = [
+  //   {
+  //     key: '1',
+  //     name: 'Sea Food',
+  //   },
+  //   {
+  //     key: '2',
+  //     name: 'Fast Food',
+  //   },
+  //   {
+  //     key: '3',
+  //     name: 'Chinese',
+  //   },
+  //   {
+  //     key: '4',
+  //     name: 'Italian',
+  //   },
+  //   {
+  //     key: '5',
+  //     name: 'Rice',
+  //   },
+  //   {
+  //     key: '6',
+  //     name: 'Maxican',
+  //   },
+  //   {
+  //     key: '7',
+  //     name: 'Indian',
+  //   },
+  // ];
+
   const menuItems = [
     {
       key: '1',
@@ -115,7 +124,7 @@ const Menu = () => {
   const renderScene = ({route, jumpTo}) => {
     switch (route.key) {
       case 'categories':
-        return <Category jumpTo={jumpTo} categories={categories} />;
+        return <Category jumpTo={jumpTo} categories={categories} user={user} />;
       case 'items':
         return (
           <MenuItems

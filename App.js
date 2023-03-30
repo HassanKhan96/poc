@@ -81,7 +81,7 @@ const AppWrapper = () => {
             sync={{
               flexible: true,
               onError: (_, error) => {
-                console.log(error);
+                console.log('realm error: ===', error);
               },
             }}
             fallback={<Loading />}>
