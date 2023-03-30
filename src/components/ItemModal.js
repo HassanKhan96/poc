@@ -3,10 +3,16 @@ import { Pressable, View } from "react-native"
 import { Button, Menu, Text, TextInput } from "react-native-paper"
 import globalColors from "../styles/colors"
 import CustomModal from "./Modal"
+import Icon from 'react-native-vector-icons/AntDesign';
+import { realmContext } from "../context/RealmContext"
+
 
 const ItemModal = ({ visible, setVisible, title }) => {
     const [showMenu, setShowMenu] = useState(false)
     const [selectCategory, setSelectCategory] = useState('')
+    const { useRealm } = realmContext
+    const realm = useRealm()
+    
     return (
         <CustomModal setVisible={setVisible} visible={visible} title={title}>
             <TextInput
