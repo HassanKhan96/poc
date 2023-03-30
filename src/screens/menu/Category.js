@@ -13,13 +13,15 @@ import {memo, useCallback, useEffect, useState} from 'react';
 import {useUser} from '@realm/react';
 import {realmContext} from '../../context/RealmContext';
 import {CategoryModal} from '../../schema/categorySchema';
+import CustomModal from '../../components/Modal';
 
 const Category = ({categories}) => {
-  console.log(categories);
   const {useRealm} = realmContext;
   const user = useUser();
   const realm = useRealm();
   const [newCategory, setNewCategory] = useState('');
+  const [updateValue, setUpdateValue] = useState('')
+  const [update, setUpdate] = useState({ status: false, data: null})
 
   useEffect(() => {
     realm.subscriptions.update(mutableSubs => {
@@ -32,7 +34,6 @@ const Category = ({categories}) => {
       const existingCategory = realm
         .objects(CategoryModal)
         .filtered('name == $0', name);
-      console.log(existingCategory);
       if (existingCategory.length) return;
 
       realm.write(() => {
@@ -41,16 +42,18 @@ const Category = ({categories}) => {
           name,
         });
       });
+      setNewCategory('')
+
     },
     [user, realm],
   );
 
   const deleteCategory = useCallback(
-    name => {
-      const category = realm.objectForPrimaryKey(CategoryModal, name);
+    id => {
+      const category = realm.objectForPrimaryKey(CategoryModal, id);
       if (category) {
         realm.write(() => {
-          realm.delete(categories);
+          realm.delete(category);
         });
       }
     },
@@ -58,19 +61,47 @@ const Category = ({categories}) => {
   );
 
   const updateCategory = useCallback(
-    name => {
-      const category = realm.objectForPrimaryKey(CategoryModal, name);
-      if (category) {
+    (id, name) => {
+      const category = realm.objectForPrimaryKey(CategoryModal, id);
+      if (category && name) {
         realm.write(() => {
           category.name = name;
         });
+        setUpdate({ status: false, data: null})
+        setUpdateValue('')
       }
     },
     [user, realm],
   );
+
   return (
     <View style={menuStyles.container}>
-      {/* <Card style={menuStyles.categoryCard}> */}
+      <CustomModal visible={update.status} setVisible={(status) => setUpdate({ status, data: null})} title="Edit Category">
+      <TextInput
+          mode="outlined"
+          style={{backgroundColor: globalColors.white, fontSize: 13, marginBottom: 20}}
+          outlineColor={globalColors.gray}
+          onChangeText={text => setUpdateValue(text)}
+          defaultValue={update.data?.name}
+          />
+          <View style={{ flexDirection: 'row', justifyContent: 'space-evenly'}}>
+          <Button 
+            mode='contained'
+            onPress={() => {
+              updateCategory(update.data?._id,updateValue)
+            }}
+          >Update</Button>
+          <Button 
+            buttonColor={globalColors.danger}
+            mode='contained'
+            onPress={() => {
+              setUpdate({ status: false, data: null})
+              setUpdateValue('')
+            }}
+          >Cancel</Button>
+          </View>
+      </CustomModal>
+
       <View style={menuStyles.categoryField}>
         <TextInput
           mode="outlined"
@@ -116,12 +147,14 @@ const Category = ({categories}) => {
                         style={menuStyles.itemActionBtn}
                         size={20}
                         iconColor={globalColors.primary}
+                        onPress={() => setUpdate({ status: true, data: item})}
                       />
                       <IconButton
                         size={20}
                         icon={'trash-can'}
                         style={menuStyles.itemActionBtn}
                         iconColor={globalColors.danger}
+                        onPress={() => deleteCategory(item?._id)}
                       />
                     </View>
                   </View>
@@ -129,7 +162,7 @@ const Category = ({categories}) => {
               </Card>
             );
           }}
-          keyExtractor={item => item._id}
+          keyExtractor={item => item?._id}
         />
       </Card.Content>
       {/* </Card> */}

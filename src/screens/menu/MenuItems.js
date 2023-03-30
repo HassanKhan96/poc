@@ -13,10 +13,14 @@ import menuStyles from './styles';
 import globalColors from '../../styles/colors';
 import {useState, memo} from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
+import CustomModal from '../../components/Modal';
+import ItemModal from '../../components/ItemModal';
 
 const MenuItems = ({menuItems, categories}) => {
   const [showMenu, setShowMenu] = useState(false);
+  const [showItemModal, setShowItemModal] = useState(false)
   const [filterCategory, setFilterCategory] = useState('All');
+
 
   const onSelectCategory = category => {
     setFilterCategory(category);
@@ -25,8 +29,8 @@ const MenuItems = ({menuItems, categories}) => {
 
   return (
     <View style={menuStyles.container}>
-      {/* <Card style={menuStyles.categoryCard}> */}
-
+      <ItemModal title={"Add New Item"} visible={showItemModal} setVisible={setShowItemModal}/>
+      <Button mode='contained' icon="plus" style={{ marginVertical: 10}} onPress={() => setShowItemModal(true)}>Add New Item</Button>
       <View style={menuStyles.categoryField}>
         <TextInput
           mode="outlined"
@@ -126,7 +130,6 @@ const MenuItems = ({menuItems, categories}) => {
           keyExtractor={item => item.key}
         />
       </Card.Content>
-      {/* </Card> */}
     </View>
   );
 };
