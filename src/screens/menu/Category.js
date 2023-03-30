@@ -129,7 +129,7 @@ const Category = ({categories}) => {
               </Card>
             );
           }}
-          keyExtractor={item => item.key}
+          keyExtractor={item => item._id}
         />
       </Card.Content>
       {/* </Card> */}

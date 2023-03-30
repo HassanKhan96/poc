@@ -13,7 +13,7 @@ export class CategoryModal extends Realm.Object<CategoryModal> {
       _id: {type: 'objectId', default: () => new BSON.ObjectId()},
       name: {type: 'string', indexed: true},
       userId: 'string',
-      createdAt: {type: 'date?', default: () => Date.now()},
+      createdAt: {type: 'date?', default: () => new Date()},
     },
   };
 }
