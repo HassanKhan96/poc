@@ -4,26 +4,26 @@ import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import Category from './Category';
 import MenuItems from './MenuItems';
 import globalColors from '../../styles/colors';
-import {realmContext} from '../../context/RealmContext';
-import {useUser} from '@realm/react';
-import {CategoryModal} from '../../schema/categorySchema';
 
 const renderTabBar = props => (
   <TabBar
     {...props}
     indicatorStyle={{backgroundColor: globalColors.primary}}
-    style={{backgroundColor: globalColors.white}}
+    style={{
+      backgroundColor: globalColors.white,
+    }}
+    labelStyle={{fontFamily: 'PlusJakartaSans-Regular'}}
     activeColor={globalColors.primary}
     inactiveColor={globalColors.darkGray}
   />
 );
 
+const renderScene = SceneMap({
+  items: MenuItems,
+  categories: Category,
+});
+
 const Menu = () => {
-  const {useQuery} = realmContext;
-  const user = useUser();
-  const categories = useQuery(CategoryModal)
-    .filtered(`userId == "${user.id}"`)
-    .sorted('createdAt');
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     {key: 'items', title: 'Items'},
@@ -121,22 +121,6 @@ const Menu = () => {
     },
   ];
 
-  const renderScene = ({route, jumpTo}) => {
-    switch (route.key) {
-      case 'categories':
-        return <Category jumpTo={jumpTo} categories={categories} user={user} />;
-      case 'items':
-        return (
-          <MenuItems
-            jumpTo={jumpTo}
-            categories={categories}
-            menuItems={menuItems}
-          />
-        );
-      default:
-        return null;
-    }
-  };
   return (
     <TabView
       navigationState={{index, routes}}

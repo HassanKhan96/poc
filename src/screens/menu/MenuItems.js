@@ -11,26 +11,96 @@ import {
 import {FlatList, Pressable, View} from 'react-native';
 import menuStyles from './styles';
 import globalColors from '../../styles/colors';
-import {useState, memo} from 'react';
+import {useState, memo, useEffect, useCallback} from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
 import CustomModal from '../../components/Modal';
 import ItemModal from '../../components/ItemModal';
+import {realmContext} from '../../context/RealmContext';
+import {CategoryModal} from '../../schema/categorySchema';
+import {useUser} from '@realm/react';
+import {Item} from '../../schema/Item';
 
-const MenuItems = ({menuItems, categories}) => {
+const MenuItems = () => {
   const [showMenu, setShowMenu] = useState(false);
-  const [showItemModal, setShowItemModal] = useState(false)
+  const [showItemModal, setShowItemModal] = useState(false);
   const [filterCategory, setFilterCategory] = useState('All');
+  const {useRealm, useQuery} = realmContext;
+  const realm = useRealm();
+  const user = useUser();
+  const categories = realm
+    .objects(CategoryModal)
+    .filtered('userId == $0', user.id);
 
+  const menuItems = useQuery(Item)
+    .filtered(`userId == "${user.id}"`)
+    .sorted('_id');
+
+  useEffect(() => {
+    realm.subscriptions.update(mutableSubs => {
+      mutableSubs.add(realm.objects(Item), {name: 'items'});
+    });
+  }, []);
 
   const onSelectCategory = category => {
     setFilterCategory(category);
     setShowMenu(false);
   };
 
+  const addItem = useCallback(
+    item => {
+      const itemExists = realm.objects(Item).filtered('name == $0', item?.name);
+      if (itemExists.length) return;
+
+      const categoryExists = realm.objectForPrimaryKey(
+        CategoryModal,
+        item?.category,
+      );
+      if (!categoryExists) return;
+
+      realm.write(() => {
+        let newItem = new Item(realm, {
+          _id: Realm.BSON.ObjectId(),
+          name: item?.name,
+          price: Number(item.price),
+          takeAwayPrice: Number(item?.takeAwayPrice),
+          userId: user?.id,
+        });
+        categoryExists.items.push(newItem);
+      });
+    },
+    [user, realm],
+  );
+
+  const deleteItem = useCallback(
+    id => {
+      try {
+        const item = realm.objectForPrimaryKey(Item, id);
+        realm.write(() => {
+          realm.delete(item);
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [user, realm],
+  );
+
   return (
     <View style={menuStyles.container}>
-      <ItemModal title={"Add New Item"} visible={showItemModal} setVisible={setShowItemModal}/>
-      <Button mode='contained' icon="plus" style={{ marginVertical: 10}} onPress={() => setShowItemModal(true)}>Add New Item</Button>
+      <ItemModal
+        title={'Add New Item'}
+        visible={showItemModal}
+        setVisible={setShowItemModal}
+        categories={categories}
+        onSubmit={values => addItem(values)}
+      />
+      <Button
+        mode="contained"
+        icon="plus"
+        style={{marginVertical: 10}}
+        onPress={() => setShowItemModal(true)}>
+        Add New Item
+      </Button>
       <View style={menuStyles.categoryField}>
         <TextInput
           mode="outlined"
@@ -70,7 +140,7 @@ const MenuItems = ({menuItems, categories}) => {
               {categories.map(category => {
                 return (
                   <Menu.Item
-                    key={category.key}
+                    key={category?._id}
                     title={category?.name}
                     onPress={() => onSelectCategory(category?.name)}
                   />
@@ -106,7 +176,7 @@ const MenuItems = ({menuItems, categories}) => {
                     <Text
                       variant="labelMedium"
                       style={{marginBottom: 7, color: globalColors.darkGray}}>
-                      {item?.category}
+                      {item?.category[0]?.name}
                     </Text>
                     <View style={{flexDirection: 'row'}}>
                       <IconButton
@@ -120,6 +190,7 @@ const MenuItems = ({menuItems, categories}) => {
                         icon={'trash-can'}
                         style={menuStyles.itemActionBtn}
                         iconColor={globalColors.danger}
+                        onPress={() => deleteItem(item._id)}
                       />
                     </View>
                   </View>
@@ -127,7 +198,7 @@ const MenuItems = ({menuItems, categories}) => {
               </Card>
             );
           }}
-          keyExtractor={item => item.key}
+          keyExtractor={item => item._id}
         />
       </Card.Content>
     </View>

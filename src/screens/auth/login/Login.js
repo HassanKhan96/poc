@@ -7,6 +7,7 @@ import globalColors from '../../../styles/colors';
 import {AuthContainer} from '../AuthContainer';
 import Realm from 'realm';
 import {useApp} from '@realm/react';
+import SnackMessage from '../../../components/SnackMessage';
 
 const Login = ({navigation}) => {
   const [email, setEmail] = useState('');
@@ -32,16 +33,11 @@ const Login = ({navigation}) => {
   return (
     <AuthContainer>
       <Text variant="headlineLarge">Login</Text>
-      <Snackbar
-        style={{width: '100%'}}
+      <SnackMessage
         visible={alert.status}
-        onDismiss={() => setAlert({message: '', status: false})}
-        action={{
-          label: 'Close',
-          onPress: () => setAlert({message: '', status: false}),
-        }}>
-        {alert.message}
-      </Snackbar>
+        onClose={() => setAlert({status: false, message: ''})}
+        message={alert.message}
+      />
       <View>
         <TextInput
           style={defaultStyles.inputText}

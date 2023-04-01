@@ -15,13 +15,16 @@ import {realmContext} from '../../context/RealmContext';
 import {CategoryModal} from '../../schema/categorySchema';
 import CustomModal from '../../components/Modal';
 
-const Category = ({categories}) => {
-  const {useRealm} = realmContext;
+const Category = () => {
+  const {useRealm, useQuery} = realmContext;
   const user = useUser();
   const realm = useRealm();
+  const categories = useQuery(CategoryModal)
+    .filtered('userId == $0', user.id)
+    .sorted('createdAt');
   const [newCategory, setNewCategory] = useState('');
-  const [updateValue, setUpdateValue] = useState('')
-  const [update, setUpdate] = useState({ status: false, data: null})
+  const [updateValue, setUpdateValue] = useState('');
+  const [update, setUpdate] = useState({status: false, data: null});
 
   useEffect(() => {
     realm.subscriptions.update(mutableSubs => {
@@ -40,10 +43,10 @@ const Category = ({categories}) => {
         return new CategoryModal(realm, {
           userId: user?.id,
           name,
+          items: [],
         });
       });
-      setNewCategory('')
-
+      setNewCategory('');
     },
     [user, realm],
   );
@@ -67,8 +70,8 @@ const Category = ({categories}) => {
         realm.write(() => {
           category.name = name;
         });
-        setUpdate({ status: false, data: null})
-        setUpdateValue('')
+        setUpdate({status: false, data: null});
+        setUpdateValue('');
       }
     },
     [user, realm],
@@ -76,30 +79,39 @@ const Category = ({categories}) => {
 
   return (
     <View style={menuStyles.container}>
-      <CustomModal visible={update.status} setVisible={(status) => setUpdate({ status, data: null})} title="Edit Category">
-      <TextInput
+      <CustomModal
+        visible={update.status}
+        setVisible={status => setUpdate({status, data: null})}
+        title="Edit Category">
+        <TextInput
           mode="outlined"
-          style={{backgroundColor: globalColors.white, fontSize: 13, marginBottom: 20}}
+          style={{
+            backgroundColor: globalColors.white,
+            fontSize: 13,
+            marginBottom: 20,
+          }}
           outlineColor={globalColors.gray}
           onChangeText={text => setUpdateValue(text)}
           defaultValue={update.data?.name}
-          />
-          <View style={{ flexDirection: 'row', justifyContent: 'space-evenly'}}>
-          <Button 
-            mode='contained'
+        />
+        <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
+          <Button
+            mode="contained"
             onPress={() => {
-              updateCategory(update.data?._id,updateValue)
-            }}
-          >Update</Button>
-          <Button 
+              updateCategory(update.data?._id, updateValue);
+            }}>
+            Update
+          </Button>
+          <Button
             buttonColor={globalColors.danger}
-            mode='contained'
+            mode="contained"
             onPress={() => {
-              setUpdate({ status: false, data: null})
-              setUpdateValue('')
-            }}
-          >Cancel</Button>
-          </View>
+              setUpdate({status: false, data: null});
+              setUpdateValue('');
+            }}>
+            Cancel
+          </Button>
+        </View>
       </CustomModal>
 
       <View style={menuStyles.categoryField}>
@@ -147,7 +159,7 @@ const Category = ({categories}) => {
                         style={menuStyles.itemActionBtn}
                         size={20}
                         iconColor={globalColors.primary}
-                        onPress={() => setUpdate({ status: true, data: item})}
+                        onPress={() => setUpdate({status: true, data: item})}
                       />
                       <IconButton
                         size={20}
