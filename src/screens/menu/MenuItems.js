@@ -21,18 +21,23 @@ import {useUser} from '@realm/react';
 import {Item} from '../../schema/Item';
 
 const MenuItems = () => {
-  const [showMenu, setShowMenu] = useState(false);
-  const [showItemModal, setShowItemModal] = useState(false);
-  const [filterCategory, setFilterCategory] = useState('All');
   const {useRealm, useQuery} = realmContext;
   const realm = useRealm();
   const user = useUser();
+  let itemQuery = `userId == "${user.id}"`
+  const [showMenu, setShowMenu] = useState(false);
+  const [showItemModal, setShowItemModal] = useState(false);
+  const [filterCategory, setFilterCategory] = useState('All');
+  const [search, setSearch] = useState('')
+  const [filterQuery, setFilterQuery] = useState(itemQuery)
+  
+
   const categories = realm
     .objects(CategoryModal)
     .filtered('userId == $0', user.id);
 
   const menuItems = useQuery(Item)
-    .filtered(`userId == "${user.id}"`)
+    .filtered(filterQuery+` AND name LIKE[c] '*${search}*'`)
     .sorted('_id');
 
   useEffect(() => {
@@ -40,6 +45,16 @@ const MenuItems = () => {
       mutableSubs.add(realm.objects(Item), {name: 'items'});
     });
   }, []);
+
+  useEffect(() => {
+    if(filterCategory !== 'All') {
+      setFilterQuery(itemQuery.concat(` AND category.name == "${filterCategory}"`))
+    }
+    else {
+      setFilterQuery(itemQuery)
+    }
+  },[filterCategory])
+
 
   const onSelectCategory = category => {
     setFilterCategory(category);
@@ -106,6 +121,8 @@ const MenuItems = () => {
           mode="outlined"
           style={{backgroundColor: globalColors.white, fontSize: 13}}
           label="Search"
+          value={search}
+          onChangeText={text => setSearch(text)}
           outlineColor={globalColors.gray}
           left={<TextInput.Icon icon="magnify" iconColor={globalColors.gray} />}
         />

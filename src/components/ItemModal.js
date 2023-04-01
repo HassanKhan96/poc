@@ -3,7 +3,6 @@ import {Pressable, View} from 'react-native';
 import {Button, Menu, Modal, Portal, Text, TextInput} from 'react-native-paper';
 import globalColors from '../styles/colors';
 import Icon from 'react-native-vector-icons/AntDesign';
-import {Picker} from '@react-native-picker/picker';
 
 const ItemModal = ({
   visible,
