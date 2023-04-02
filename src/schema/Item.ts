@@ -7,7 +7,7 @@ export class Item extends Realm.Object<Item> {
   price!: Number;
   takeAwayPrice!: Number;
   userId!: string;
-  category!: Realm.Results<CategoryModal>;
+  category!: CategoryModal;
 
   static schema: Realm.ObjectSchema = {
     name: 'Item',
@@ -19,11 +19,7 @@ export class Item extends Realm.Object<Item> {
       price: 'int',
       takeAwayPrice: 'int',
       userId: 'string',
-      category: {
-        type: 'linkingObjects',
-        objectType: 'Category',
-        property: 'items',
-      },
+      category: 'Category',
     },
   };
 }

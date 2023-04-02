@@ -1,17 +1,18 @@
-const {Snackbar} = require('react-native-paper');
+const {Snackbar, Portal} = require('react-native-paper');
 
 const SnackMessage = ({visible, onClose, message}) => {
   return (
-    <Snackbar
-      style={{width: '100%'}}
-      visible={visible}
-      onDismiss={onClose}
-      action={{
-        label: 'Close',
-        onPress: () => onClose(),
-      }}>
-      {message}
-    </Snackbar>
+    <Portal>
+      <Snackbar
+        visible={visible}
+        onDismiss={onClose}
+        action={{
+          label: 'Close',
+          onPress: () => onClose(),
+        }}>
+        {message}
+      </Snackbar>
+    </Portal>
   );
 };
 

@@ -6,7 +6,6 @@ export class CategoryModal extends Realm.Object<CategoryModal> {
   name!: string;
   userId!: string;
   createdAt!: Date;
-  items!: Realm.List<Item>;
 
   static schema: Realm.ObjectSchema = {
     name: 'Category',
@@ -15,7 +14,6 @@ export class CategoryModal extends Realm.Object<CategoryModal> {
       _id: {type: 'objectId', default: () => new BSON.ObjectId()},
       name: {type: 'string', indexed: true},
       userId: 'string',
-      items: 'Item[]',
       createdAt: {type: 'date?', default: () => new Date()},
     },
   };

@@ -19,6 +19,7 @@ import {realmContext} from '../../context/RealmContext';
 import {CategoryModal} from '../../schema/categorySchema';
 import {useUser} from '@realm/react';
 import {Item} from '../../schema/Item';
+import SnackMessage from '../../components/SnackMessage';
 
 const MenuItems = () => {
   const {useRealm, useQuery} = realmContext;
@@ -31,6 +32,7 @@ const MenuItems = () => {
   const [search, setSearch] = useState('');
   const [filterQuery, setFilterQuery] = useState(itemQuery);
   const [updates, setUpdates] = useState(null);
+  const [alert, setAlert] = useState({message: '', status: false});
 
   const categories = realm
     .objects(CategoryModal)
@@ -63,25 +65,34 @@ const MenuItems = () => {
 
   const addItem = useCallback(
     item => {
-      const itemExists = realm.objects(Item).filtered('name == $0', item?.name);
-      if (itemExists.length) return;
+      try {
+        const itemExists = realm
+          .objects(Item)
+          .filtered('name == $0', item?.name);
+        if (itemExists.length)
+          return setAlert({message: 'Item already exists', status: true});
 
-      const categoryExists = realm.objectForPrimaryKey(
-        CategoryModal,
-        item?.category,
-      );
-      if (!categoryExists) return;
+        const categoryExists = realm.objectForPrimaryKey(
+          CategoryModal,
+          item?.category,
+        );
+        if (!categoryExists)
+          return setAlert({message: 'Category does not exists', status: true});
 
-      realm.write(() => {
-        let newItem = new Item(realm, {
-          _id: Realm.BSON.ObjectId(),
-          name: item?.name,
-          price: Number(item.price),
-          takeAwayPrice: Number(item?.takeAwayPrice),
-          userId: user?.id,
-          category: categoryExists,
+        realm.write(() => {
+          let newItem = new Item(realm, {
+            _id: Realm.BSON.ObjectId(),
+            name: item?.name,
+            price: Number(item.price),
+            takeAwayPrice: Number(item?.takeAwayPrice),
+            userId: user?.id,
+            category: categoryExists,
+          });
         });
-      });
+        setAlert({message: 'Item added', status: true});
+      } catch (error) {
+        setAlert({message: error.message, status: true});
+      }
     },
     [user, realm],
   );
@@ -95,29 +106,18 @@ const MenuItems = () => {
           values?.category,
         );
 
-        if (itemExists) {
-          realm.write(() => {
-            itemExists.name = values?.name;
-            itemExists.price = Number(values?.price);
-            itemExists.takeAwayPrice = Number(values?.takeAwayPrice);
-
-            console.log(category._id !== itemExists.category[0]._id);
-            if (category._id !== itemExists.category[0]._id) {
-              let oldCategory = realm.objectForPrimaryKey(
-                CategoryModal,
-                itemExists.category[0]._id,
-              );
-              oldCategory.items = oldCategory.items.filter(
-                item => item._id !== itemExists._id,
-              );
-              category.items.push(itemExists);
-            }
-          });
-        }
-        console.log(itemExists.category);
+        if (!itemExists)
+          return setAlert({message: 'Item does not exists', status: false});
+        realm.write(() => {
+          itemExists.name = values?.name;
+          itemExists.price = Number(values?.price);
+          itemExists.takeAwayPrice = Number(values?.takeAwayPrice);
+          itemExists.category = category;
+        });
         setUpdates(null);
+        setAlert({message: 'Item updated', status: true});
       } catch (error) {
-        console.log(error);
+        setAlert({message: error.message, status: true});
       }
     },
     [realm, user],
@@ -127,11 +127,14 @@ const MenuItems = () => {
     id => {
       try {
         const item = realm.objectForPrimaryKey(Item, id);
+        if (!item)
+          return setAlert({message: 'Item does not exists', status: true});
         realm.write(() => {
           realm.delete(item);
         });
+        setAlert({message: 'Item deleted', status: true});
       } catch (error) {
-        console.log(error);
+        setAlert({message: error.message, status: true});
       }
     },
     [user, realm],
@@ -144,6 +147,11 @@ const MenuItems = () => {
 
   return (
     <View style={menuStyles.container}>
+      <SnackMessage
+        visible={alert.status}
+        message={alert.message}
+        onClose={() => setAlert({message: '', status: false})}
+      />
       <ItemModal
         visible={showItemModal}
         setVisible={value => {
@@ -238,7 +246,7 @@ const MenuItems = () => {
                     <Text
                       variant="labelMedium"
                       style={{marginBottom: 7, color: globalColors.darkGray}}>
-                      {item?.category[0]?.name}
+                      {item?.category?.name}
                     </Text>
                     <View style={{flexDirection: 'row'}}>
                       <IconButton

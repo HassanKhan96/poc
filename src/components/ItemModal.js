@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Pressable, View} from 'react-native';
 import {Button, Menu, Modal, Portal, Text, TextInput} from 'react-native-paper';
 import globalColors from '../styles/colors';
@@ -21,6 +21,12 @@ const ItemModal = ({
   const [showMenu, setShowMenu] = useState(false);
   const [selectCategory, setSelectCategory] = useState('');
   const [itemValues, setItemValues] = useState(init);
+  const handleChange = useCallback(
+    text => {
+      setItemValues(prev => ({...prev, name: text}));
+    },
+    [categories],
+  );
 
   useEffect(() => {
     if (updates) {
@@ -28,9 +34,9 @@ const ItemModal = ({
         name: updates?.name,
         price: updates.price?.toString(),
         takeAwayPrice: updates?.takeAwayPrice?.toString(),
-        category: updates?.category[0]?._id,
+        category: updates?.category?._id,
       });
-      setSelectCategory(updates?.category[0]?.name);
+      setSelectCategory(updates?.category?.name);
     }
   }, [updates]);
 
@@ -45,6 +51,7 @@ const ItemModal = ({
     onSubmit(itemValues, updates?._id);
     setVisible(false);
     setItemValues(init);
+    setSelectCategory('');
   };
 
   return (
@@ -69,7 +76,7 @@ const ItemModal = ({
           label="Name"
           outlineColor={globalColors.gray}
           value={itemValues.name}
-          onChangeText={text => setItemValues(prev => ({...prev, name: text}))}
+          onChangeText={handleChange}
         />
         <TextInput
           mode="outlined"
@@ -100,31 +107,6 @@ const ItemModal = ({
 
         <View style={{marginTop: 10}}>
           <Text variant="titleMedium">Category</Text>
-          {/* <Picker
-            mode="dropdown"
-            dropdownIconColor={globalColors.black}
-            selectionColor="#000"
-            dropdownIconRippleColor={globalColors.gray}
-            style={{
-              color: globalColors.darkGray,
-              fontFamily: 'PlusJakartaSans-Regular',
-            }}
-            itemStyle={{fontFamily: 'PlusJakartaSans-Regular', color: '#ccc'}}
-            // selectedValue={itemValues.category}
-            onValueChange={(itemValue, index) => {
-              setItemValues(prev => ({...prev, category: itemValue}));
-            }}>
-            <Picker.Item label="Select a value" value="" />
-            {categories.map((item, index) => {
-              return (
-                <Picker.Item
-                  key={item?._id}
-                  value={item?._id}
-                  label={item?.name}
-                />
-              );
-            })}
-          </Picker> */}
 
           <Pressable onPress={() => setShowMenu(true)}>
             <View
@@ -186,7 +168,7 @@ const ItemModal = ({
             buttonColor={globalColors.primary}
             onPress={() => onAdd()}
             style={{marginBottom: 10}}>
-            Add
+            {updates ? 'Update' : 'Add'}
           </Button>
           <Button
             mode="contained"
@@ -194,6 +176,7 @@ const ItemModal = ({
             style={{marginBottom: 10}}
             onPress={() => {
               setItemValues(init);
+              setSelectCategory('');
               setVisible(false);
             }}>
             Cancel

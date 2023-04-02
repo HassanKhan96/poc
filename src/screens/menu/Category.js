@@ -14,6 +14,7 @@ import {useUser} from '@realm/react';
 import {realmContext} from '../../context/RealmContext';
 import {CategoryModal} from '../../schema/categorySchema';
 import CustomModal from '../../components/Modal';
+import SnackMessage from '../../components/SnackMessage';
 
 const Category = () => {
   const {useRealm, useQuery} = realmContext;
@@ -25,6 +26,7 @@ const Category = () => {
   const [newCategory, setNewCategory] = useState('');
   const [updateValue, setUpdateValue] = useState('');
   const [update, setUpdate] = useState({status: false, data: null});
+  const [alert, setAlert] = useState({message: '', status: false});
 
   useEffect(() => {
     realm.subscriptions.update(mutableSubs => {
@@ -34,30 +36,41 @@ const Category = () => {
 
   const addCategory = useCallback(
     name => {
-      const existingCategory = realm
-        .objects(CategoryModal)
-        .filtered('name == $0', name);
-      if (existingCategory.length) return;
+      try {
+        const existingCategory = realm
+          .objects(CategoryModal)
+          .filtered('name == $0', name);
+        if (existingCategory.length)
+          return setAlert({message: 'Category exists', status: true});
 
-      realm.write(() => {
-        return new CategoryModal(realm, {
-          userId: user?.id,
-          name,
-          items: [],
+        realm.write(() => {
+          return new CategoryModal(realm, {
+            userId: user?.id,
+            name,
+            items: [],
+          });
         });
-      });
-      setNewCategory('');
+        setNewCategory('');
+        setAlert({message: 'Category added', status: true});
+      } catch (error) {
+        setAlert({message: error.message, status: true});
+      }
     },
     [user, realm],
   );
 
   const deleteCategory = useCallback(
     id => {
-      const category = realm.objectForPrimaryKey(CategoryModal, id);
-      if (category) {
+      try {
+        const category = realm.objectForPrimaryKey(CategoryModal, id);
+        if (!category)
+          return setAlert({message: 'Category does not exist', status: true});
         realm.write(() => {
           realm.delete(category);
         });
+        setAlert({message: 'Category deleted', status: true});
+      } catch (error) {
+        setAlert({message: error.message, status: true});
       }
     },
     [user, realm],
@@ -65,13 +78,18 @@ const Category = () => {
 
   const updateCategory = useCallback(
     (id, name) => {
-      const category = realm.objectForPrimaryKey(CategoryModal, id);
-      if (category && name) {
-        realm.write(() => {
-          category.name = name;
-        });
-        setUpdate({status: false, data: null});
-        setUpdateValue('');
+      try {
+        const category = realm.objectForPrimaryKey(CategoryModal, id);
+        if (category && name) {
+          realm.write(() => {
+            category.name = name;
+          });
+          setUpdate({status: false, data: null});
+          setUpdateValue('');
+          setAlert({message: 'Category updated', status: true});
+        }
+      } catch (error) {
+        setAlert({message: error.message, status: true});
       }
     },
     [user, realm],
@@ -79,6 +97,11 @@ const Category = () => {
 
   return (
     <View style={menuStyles.container}>
+      <SnackMessage
+        visible={alert.status}
+        message={alert.message}
+        onClose={() => setAlert({message: '', status: false})}
+      />
       <CustomModal
         visible={update.status}
         setVisible={status => setUpdate({status, data: null})}
