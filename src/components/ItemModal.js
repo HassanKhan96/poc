@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Pressable, View} from 'react-native';
 import {Button, Menu, Modal, Portal, Text, TextInput} from 'react-native-paper';
 import globalColors from '../styles/colors';
@@ -7,9 +7,10 @@ import Icon from 'react-native-vector-icons/AntDesign';
 const ItemModal = ({
   visible,
   setVisible,
-  title = 'Add New Item',
+  title,
   categories,
   onSubmit = () => null,
+  updates = null,
 }) => {
   const init = {
     name: '',
@@ -21,18 +22,31 @@ const ItemModal = ({
   const [selectCategory, setSelectCategory] = useState('');
   const [itemValues, setItemValues] = useState(init);
 
+  useEffect(() => {
+    if (updates) {
+      setItemValues({
+        name: updates?.name,
+        price: updates.price?.toString(),
+        takeAwayPrice: updates?.takeAwayPrice?.toString(),
+        category: updates?.category[0]?._id,
+      });
+      setSelectCategory(updates?.category[0]?.name);
+    }
+  }, [updates]);
+
   const onAdd = () => {
     if (
       !itemValues.name ||
       !itemValues.category ||
-      itemValues.price === 0 ||
-      itemValues.takeAwayPrice === 0
+      !itemValues.price ||
+      !itemValues.takeAwayPrice
     )
       return;
-    onSubmit(itemValues);
+    onSubmit(itemValues, updates?._id);
     setVisible(false);
     setItemValues(init);
   };
+
   return (
     <Portal>
       <Modal
@@ -40,7 +54,7 @@ const ItemModal = ({
         onDismiss={() => setVisible(false)}
         style={{padding: 20, backgroundColor: '#fff'}}>
         <Text variant="headlineLarge" style={{marginBottom: 20}}>
-          {title}
+          {!updates ? 'Add New Item' : 'Update Item'}
         </Text>
         <TextInput
           mode="outlined"

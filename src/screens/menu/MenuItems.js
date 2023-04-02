@@ -24,20 +24,20 @@ const MenuItems = () => {
   const {useRealm, useQuery} = realmContext;
   const realm = useRealm();
   const user = useUser();
-  let itemQuery = `userId == "${user.id}"`
+  let itemQuery = `userId == "${user.id}"`;
   const [showMenu, setShowMenu] = useState(false);
   const [showItemModal, setShowItemModal] = useState(false);
   const [filterCategory, setFilterCategory] = useState('All');
-  const [search, setSearch] = useState('')
-  const [filterQuery, setFilterQuery] = useState(itemQuery)
-  
+  const [search, setSearch] = useState('');
+  const [filterQuery, setFilterQuery] = useState(itemQuery);
+  const [updates, setUpdates] = useState(null);
 
   const categories = realm
     .objects(CategoryModal)
     .filtered('userId == $0', user.id);
 
   const menuItems = useQuery(Item)
-    .filtered(filterQuery+` AND name LIKE[c] '*${search}*'`)
+    .filtered(filterQuery + ` AND name LIKE[c] '*${search}*'`)
     .sorted('_id');
 
   useEffect(() => {
@@ -47,14 +47,14 @@ const MenuItems = () => {
   }, []);
 
   useEffect(() => {
-    if(filterCategory !== 'All') {
-      setFilterQuery(itemQuery.concat(` AND category.name == "${filterCategory}"`))
+    if (filterCategory !== 'All') {
+      setFilterQuery(
+        itemQuery.concat(` AND category.name == "${filterCategory}"`),
+      );
+    } else {
+      setFilterQuery(itemQuery);
     }
-    else {
-      setFilterQuery(itemQuery)
-    }
-  },[filterCategory])
-
+  }, [filterCategory]);
 
   const onSelectCategory = category => {
     setFilterCategory(category);
@@ -79,11 +79,48 @@ const MenuItems = () => {
           price: Number(item.price),
           takeAwayPrice: Number(item?.takeAwayPrice),
           userId: user?.id,
+          category: categoryExists,
         });
-        categoryExists.items.push(newItem);
       });
     },
     [user, realm],
+  );
+
+  const updateItem = useCallback(
+    (values, id) => {
+      try {
+        let itemExists = realm.objectForPrimaryKey(Item, id);
+        let category = realm.objectForPrimaryKey(
+          CategoryModal,
+          values?.category,
+        );
+
+        if (itemExists) {
+          realm.write(() => {
+            itemExists.name = values?.name;
+            itemExists.price = Number(values?.price);
+            itemExists.takeAwayPrice = Number(values?.takeAwayPrice);
+
+            console.log(category._id !== itemExists.category[0]._id);
+            if (category._id !== itemExists.category[0]._id) {
+              let oldCategory = realm.objectForPrimaryKey(
+                CategoryModal,
+                itemExists.category[0]._id,
+              );
+              oldCategory.items = oldCategory.items.filter(
+                item => item._id !== itemExists._id,
+              );
+              category.items.push(itemExists);
+            }
+          });
+        }
+        console.log(itemExists.category);
+        setUpdates(null);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [realm, user],
   );
 
   const deleteItem = useCallback(
@@ -100,14 +137,22 @@ const MenuItems = () => {
     [user, realm],
   );
 
+  const onSubmit = (values, id = null) => {
+    if (updates) updateItem(values, id);
+    else addItem(values);
+  };
+
   return (
     <View style={menuStyles.container}>
       <ItemModal
-        title={'Add New Item'}
         visible={showItemModal}
-        setVisible={setShowItemModal}
+        setVisible={value => {
+          if (!value) setUpdates(false);
+          setShowItemModal(value);
+        }}
         categories={categories}
-        onSubmit={values => addItem(values)}
+        onSubmit={(values, id = null) => onSubmit(values, id)}
+        updates={updates}
       />
       <Button
         mode="contained"
@@ -201,6 +246,10 @@ const MenuItems = () => {
                         style={menuStyles.itemActionBtn}
                         size={20}
                         iconColor={globalColors.primary}
+                        onPress={() => {
+                          setUpdates(item);
+                          setShowItemModal(true);
+                        }}
                       />
                       <IconButton
                         size={20}
