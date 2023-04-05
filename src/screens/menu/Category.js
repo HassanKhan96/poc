@@ -3,6 +3,8 @@ import {
   Card,
   IconButton,
   List,
+  Modal,
+  Portal,
   Text,
   TextInput,
 } from 'react-native-paper';
@@ -102,40 +104,45 @@ const Category = () => {
         message={alert.message}
         onClose={() => setAlert({message: '', status: false})}
       />
-      <CustomModal
-        visible={update.status}
-        setVisible={status => setUpdate({status, data: null})}
-        title="Edit Category">
-        <TextInput
-          mode="outlined"
-          style={{
-            backgroundColor: globalColors.white,
-            fontSize: 13,
-            marginBottom: 20,
-          }}
-          outlineColor={globalColors.gray}
-          onChangeText={text => setUpdateValue(text)}
-          defaultValue={update.data?.name}
-        />
-        <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
-          <Button
-            mode="contained"
-            onPress={() => {
-              updateCategory(update.data?._id, updateValue);
-            }}>
-            Update
-          </Button>
-          <Button
-            buttonColor={globalColors.danger}
-            mode="contained"
-            onPress={() => {
-              setUpdate({status: false, data: null});
-              setUpdateValue('');
-            }}>
-            Cancel
-          </Button>
-        </View>
-      </CustomModal>
+      <Portal>
+        <Modal
+          visible={update.status}
+          onDismiss={status => setUpdate({status, data: null})}
+          style={{padding: 20, backgroundColor: '#fff'}}>
+          <Text variant="headlineLarge" style={{marginBottom: 20}}>
+            Edit Category
+          </Text>
+          <TextInput
+            mode="outlined"
+            style={{
+              backgroundColor: globalColors.white,
+              fontSize: 13,
+              marginBottom: 20,
+            }}
+            outlineColor={globalColors.gray}
+            onChangeText={text => setUpdateValue(text)}
+            defaultValue={update.data?.name}
+          />
+          <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
+            <Button
+              mode="contained"
+              onPress={() => {
+                updateCategory(update.data?._id, updateValue);
+              }}>
+              Update
+            </Button>
+            <Button
+              buttonColor={globalColors.danger}
+              mode="contained"
+              onPress={() => {
+                setUpdate({status: false, data: null});
+                setUpdateValue('');
+              }}>
+              Cancel
+            </Button>
+          </View>
+        </Modal>
+      </Portal>
 
       <View style={menuStyles.categoryField}>
         <TextInput

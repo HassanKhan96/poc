@@ -3,7 +3,8 @@ import globalColors from './colors';
 
 const defaultStyles = StyleSheet.create({
   container: {
-    padding: 10,
+    paddingHorizontal: 15,
+    paddingTop: 10,
   },
   inputText: {
     marginVertical: 10,

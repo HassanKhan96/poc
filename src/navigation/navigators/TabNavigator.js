@@ -8,15 +8,14 @@ import {useUser} from '@realm/react';
 import Order from '../../screens/order/Order';
 import Profile from '../../screens/profile/Profile';
 import globalColors from '../../styles/colors';
+import TableNavigator from './TableNavigator';
 
 const Tab = createBottomTabNavigator();
+
 const TabNavigator = () => {
   const user = useUser();
   return (
     <Tab.Navigator
-      // sceneContainerStyle={{
-      //   backgroundColor: globalColors.secondary,
-      // }}
       screenOptions={{
         headerRight: () => (
           <Button onPress={() => user?.logOut()}>Logout</Button>
@@ -26,10 +25,12 @@ const TabNavigator = () => {
         },
       }}>
       <Tab.Screen
-        name="Tables"
-        component={Tables}
+        name="TableRoot"
+        component={TableNavigator}
         options={{
           tabBarLabelStyle: {fontSize: 14},
+          tabBarLabel: 'Tables',
+          headerShown: false,
           tabBarIcon: ({color, size}) => (
             <Icons name="table-furniture" color={color} size={size} />
           ),

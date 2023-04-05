@@ -1,9 +1,26 @@
-import {View, useWindowDimensions} from 'react-native';
 import {useState} from 'react';
-import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
-import Category from './Category';
-import MenuItems from './MenuItems';
+import {Text} from 'react-native-paper';
+import {useWindowDimensions} from 'react-native';
+import AddItems from './AddItems';
+import Details from './Details';
+import Items from './Items';
+import {TabBar, TabView} from 'react-native-tab-view';
 import globalColors from '../../styles/colors';
+
+const renderScene = ({route}) => {
+  switch (route.key) {
+    case 'items':
+      return <Items />;
+
+    case 'addItems':
+      return <AddItems />;
+
+    case 'details':
+      return <Details />;
+    default:
+      return null;
+  }
+};
 
 const renderTabBar = props => (
   <TabBar
@@ -18,19 +35,14 @@ const renderTabBar = props => (
   />
 );
 
-const renderScene = SceneMap({
-  items: MenuItems,
-  categories: Category,
-});
-
-const Menu = () => {
+const CoverTable = () => {
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     {key: 'items', title: 'Items'},
-    {key: 'categories', title: 'Categories'},
+    {key: 'addItems', title: 'Add Items'},
+    {key: 'details', title: 'Details'},
   ]);
   const layout = useWindowDimensions();
-
   return (
     <TabView
       navigationState={{index, routes}}
@@ -42,4 +54,4 @@ const Menu = () => {
   );
 };
 
-export default Menu;
+export default CoverTable;
