@@ -7,16 +7,11 @@ const coverTableStyles = StyleSheet.create({
   },
   coverFieldContainer: {
     backgroundColor: globalColors.white,
-    paddingBottom: 20,
   },
   coverInput: {
     justifyContent: 'center',
     width: '100%',
     alignItems: 'center',
-  },
-  itemsContainer: {
-    backgroundColor: globalColors.white,
-    marginTop: 20,
   },
 });
 

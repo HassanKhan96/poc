@@ -37,6 +37,7 @@ const menuStyles = StyleSheet.create({
 
   itemCard: {
     marginVertical: 5,
+    marginHorizontal: 5,
     paddingVertical: 10,
     paddingHorizontal: 10,
     backgroundColor: globalColors.white,

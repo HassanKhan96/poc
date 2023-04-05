@@ -10,6 +10,7 @@ import {Table} from '../../schema/tableSchema';
 import AddTableModal from '../../components/AddTableModal';
 import TableOptionsModal from '../../components/TableOptionsModal';
 import UpdateTableModal from '../../components/UpdateTableModal';
+import TableCoverModal from '../../components/TableCoverModal';
 const Tables = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showOptionsModal, setShowOptionsModal] = useState({
@@ -17,6 +18,10 @@ const Tables = () => {
     table: null,
   });
   const [updateModal, setUpdateModal] = useState({status: false, table: null});
+  const [showCoverModal, setShowCoverModal] = useState({
+    status: false,
+    table: null,
+  });
   const {useRealm, useQuery} = realmContext;
   const user = useUser();
   const realm = useRealm();
@@ -94,6 +99,12 @@ const Tables = () => {
           onUpdate={updateTable}
         />
 
+        <TableCoverModal
+          visible={showCoverModal.status}
+          onDismiss={() => setShowCoverModal({status: false, table: null})}
+          table={showCoverModal?.table}
+        />
+
         <TableOptionsModal
           table={showOptionsModal.table}
           visible={showOptionsModal.status}
@@ -110,6 +121,7 @@ const Tables = () => {
               key={table?._id}
               title={table?.title}
               onLongPress={() => setShowOptionsModal({status: true, table})}
+              onPress={() => setShowCoverModal({status: true, table})}
             />
           );
         })}

@@ -1,9 +1,9 @@
 import {useState} from 'react';
 import {Text} from 'react-native-paper';
 import {useWindowDimensions} from 'react-native';
-import AddItems from './AddItems';
+import AddItems from './Menu/AddItems';
 import Details from './Details';
-import Items from './Items';
+import Items from './Items/Items';
 import {TabBar, TabView} from 'react-native-tab-view';
 import globalColors from '../../styles/colors';
 
@@ -15,8 +15,8 @@ const renderScene = ({route}) => {
     case 'addItems':
       return <AddItems />;
 
-    case 'details':
-      return <Details />;
+    // case 'details':
+    //   return <Details />;
     default:
       return null;
   }
@@ -35,12 +35,12 @@ const renderTabBar = props => (
   />
 );
 
-const CoverTable = () => {
+const CoverTable = ({route}) => {
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     {key: 'items', title: 'Items'},
     {key: 'addItems', title: 'Add Items'},
-    {key: 'details', title: 'Details'},
+    // {key: 'details', title: 'Details'},
   ]);
   const layout = useWindowDimensions();
   return (
