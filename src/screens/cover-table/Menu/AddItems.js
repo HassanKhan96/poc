@@ -11,7 +11,7 @@ import {
 import {FlatList, Pressable, View, TouchableOpacity} from 'react-native';
 import menuStyles from '../../menu/styles';
 import globalColors from '../../../styles/colors';
-import {useState, memo, useEffect, useCallback} from 'react';
+import {useState, memo, useEffect, useCallback, useContext} from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
 import ItemModal from '../../../components/ItemModal';
 import {realmContext} from '../../../context/RealmContext';
@@ -19,33 +19,30 @@ import {CategoryModal} from '../../../schema/categorySchema';
 import {useUser} from '@realm/react';
 import {Item} from '../../../schema/Item';
 import SnackMessage from '../../../components/SnackMessage';
+import OrderContext from '../../../context/orderContext';
+import {Order} from '../../../schema/orderSchema';
 
 const AddItems = () => {
   const {useRealm, useQuery} = realmContext;
   const realm = useRealm();
   const user = useUser();
+  const {order, setOrder} = useContext(OrderContext);
   let itemQuery = `userId == "${user.id}"`;
   const [showMenu, setShowMenu] = useState(false);
-  const [showItemModal, setShowItemModal] = useState(false);
   const [filterCategory, setFilterCategory] = useState('All');
   const [search, setSearch] = useState('');
   const [filterQuery, setFilterQuery] = useState(itemQuery);
-  const [updates, setUpdates] = useState(null);
   const [alert, setAlert] = useState({message: '', status: false});
 
+  let newOrder = realm.objectForPrimaryKey(Order, order.orderId);
   const categories = realm
     .objects(CategoryModal)
     .filtered('userId == $0', user.id);
 
-  const menuItems = useQuery(Item)
+  const menuItems = realm
+    .objects(Item)
     .filtered(filterQuery + ` AND name LIKE[c] '*${search}*'`)
     .sorted('_id');
-
-  useEffect(() => {
-    realm.subscriptions.update(mutableSubs => {
-      mutableSubs.add(realm.objects(Item), {name: 'items'});
-    });
-  }, []);
 
   useEffect(() => {
     if (filterCategory !== 'All') {
@@ -62,19 +59,41 @@ const AddItems = () => {
     setShowMenu(false);
   };
 
-  const onSubmit = (values, id = null) => {};
+  const onSelectItem = item => {
+    try {
+      let itemIndex = newOrder.items.findIndex(
+        i => i.item._id.toHexString() === item._id.toHexString(),
+      );
+
+      realm.write(() => {
+        if (itemIndex > -1) {
+          newOrder.items[itemIndex].quantity++;
+          newOrder.billAmount += item.price;
+        } else {
+          newOrder.billAmount += item.price;
+          newOrder.items.push({
+            item,
+            quantity: 1,
+          });
+        }
+      });
+      setAlert({
+        message: `${itemIndex > -1 ? newOrder.items[itemIndex].quantity : 1} ${
+          item.name
+        } added in list`,
+        status: true,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <View style={menuStyles.container}>
-      <ItemModal
-        visible={showItemModal}
-        setVisible={value => {
-          if (!value) setUpdates(false);
-          setShowItemModal(value);
-        }}
-        categories={categories}
-        onSubmit={(values, id = null) => onSubmit(values, id)}
-        updates={updates}
+      <SnackMessage
+        visible={alert.status}
+        message={alert.message}
+        onClose={() => setAlert({message: '', status: false})}
       />
       <View style={menuStyles.categoryField}>
         <TextInput
@@ -141,7 +160,7 @@ const AddItems = () => {
           numColumns={2}
           renderItem={({item, index}) => {
             return (
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => onSelectItem(item)}>
                 <Card
                   style={[menuStyles.itemCard, {width: 150}]}
                   mode="contained">
@@ -159,13 +178,6 @@ const AddItems = () => {
                         {item?.category?.name}
                       </Text>
                     </View>
-                    {/* <View style={menuStyles.itemActionContainer}>
-                    <Text
-                      variant="labelMedium"
-                      style={{marginBottom: 7, color: globalColors.darkGray}}>
-                      {item?.category?.name}
-                    </Text>
-                  </View> */}
                   </View>
                 </Card>
               </TouchableOpacity>

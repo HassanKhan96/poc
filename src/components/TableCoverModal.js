@@ -1,14 +1,47 @@
 import {useNavigation} from '@react-navigation/native';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {View} from 'react-native';
 import {Button, Card, Modal, Portal} from 'react-native-paper';
 import coverTableStyles from '../screens/cover-table/styles';
 import globalColors from '../styles/colors';
 import CounterField from './CounterField';
+import {realmContext} from '../context/RealmContext';
+import {useUser} from '@realm/react';
+import {Order} from '../schema/orderSchema';
 
 const TableCoverModal = ({visible, onDismiss, table = null}) => {
   const [coverCount, setCoverCount] = useState(0);
   const navigation = useNavigation();
+  const {useRealm, useQuery} = realmContext;
+  const realm = useRealm();
+  const user = useUser();
+
+  useEffect(() => {
+    realm.subscriptions.update(mutableSubs => {
+      mutableSubs.add(realm.objects(Order), {name: 'Orders'});
+    });
+  }, [realm, user]);
+
+  const onCover = (tableId, coverCount) => {
+    if (coverCount > 0) {
+      realm.write(() => {
+        let order = realm.create('Orders', {
+          tableId,
+          cover: coverCount,
+          userId: user.id,
+        });
+
+        navigation.navigate('Cover', {
+          name: table?.title,
+          table,
+          coverCount,
+          order,
+        });
+        onDismiss();
+        setCoverCount(0);
+      });
+    }
+  };
   return (
     <Portal>
       <Modal
@@ -28,14 +61,7 @@ const TableCoverModal = ({visible, onDismiss, table = null}) => {
             ) : (
               <Button
                 mode="contained"
-                onPress={() => {
-                  navigation.navigate('Cover', {
-                    name: table?.title,
-                    table,
-                  });
-                  onDismiss();
-                  setCoverCount(0);
-                }}>
+                onPress={() => onCover(table?._id.toHexString(), coverCount)}>
                 Cover
               </Button>
             )}
