@@ -84,7 +84,10 @@ const AddItems = () => {
         status: true,
       });
     } catch (error) {
-      console.log(error);
+      setAlert({
+        message: error.message,
+        status: true,
+      });
     }
   };
 

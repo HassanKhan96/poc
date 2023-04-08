@@ -23,6 +23,8 @@ export class Order extends Realm.Object<Order> {
   billAmount!: Number;
   amountReceived!: Number;
   items!: Realm.List<ItemInstance>;
+  status!: string;
+  isConfirmed!: boolean;
 
   static schema: Realm.ObjectSchema = {
     name: 'Orders',
@@ -35,6 +37,8 @@ export class Order extends Realm.Object<Order> {
       tableId: 'string',
       billAmount: {type: 'int', default: () => 0},
       amountReceived: {type: 'int', default: () => 0},
+      status: {type: 'string', default: () => 'open'},
+      isConfirmed: {type: 'bool', default: () => false},
       items: {
         type: 'list',
         objectType: 'ItemInstance',

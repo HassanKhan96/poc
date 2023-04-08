@@ -24,6 +24,7 @@ const TableCoverModal = ({visible, onDismiss, table = null}) => {
 
   const onCover = (tableId, coverCount) => {
     if (coverCount > 0) {
+      realm.syncSession.pause();
       realm.write(() => {
         let order = realm.create('Orders', {
           tableId,
