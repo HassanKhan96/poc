@@ -93,6 +93,8 @@ const Items = () => {
         newOrder.discount = amount;
         newOrder.amountPayable -= amount;
       });
+      setShowDiscountModal(false);
+      setItemData(null);
     } catch (error) {
       console.log(error);
     }
@@ -211,6 +213,7 @@ const Items = () => {
               disabled={
                 !newOrder.isConfirmed ||
                 newOrder.amountPayable == 0 ||
+                newOrder.discount > 0 ||
                 newOrder.status == 'closed'
               }
             />
