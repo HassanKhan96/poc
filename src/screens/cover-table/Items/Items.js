@@ -34,8 +34,6 @@ const Items = () => {
 
   let orderTable = realm.objectForPrimaryKey(Table, order.tableId);
 
-  let amountPayable = newOrder?.billAmount - newOrder?.amountReceived;
-
   const updateItem = item => {
     try {
       realm.write(() => {
@@ -46,8 +44,13 @@ const Items = () => {
         let oldQuantity = existingItem.quantity;
         existingItem.quantity = item.quantity;
         let amount = Math.abs(oldQuantity - item.quantity) * item.item.price;
-        if (oldQuantity < item.quantity) newOrder.billAmount += amount;
-        else newOrder.billAmount -= amount;
+        if (oldQuantity < item.quantity) {
+          newOrder.billAmount += amount;
+          newOrder.amountPayable += amount;
+        } else {
+          newOrder.billAmount -= amount;
+          newOrder.amountPayable -= amount;
+        }
       });
       setShowModal(false);
       setItemData(null);

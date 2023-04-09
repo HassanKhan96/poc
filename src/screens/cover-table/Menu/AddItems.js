@@ -69,8 +69,10 @@ const AddItems = () => {
         if (itemIndex > -1) {
           newOrder.items[itemIndex].quantity++;
           newOrder.billAmount += item.price;
+          newOrder.amountPayable += item.price;
         } else {
           newOrder.billAmount += item.price;
+          newOrder.amountPayable += item.price;
           newOrder.items.push({
             item,
             quantity: 1,
