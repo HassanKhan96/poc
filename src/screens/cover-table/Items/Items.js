@@ -255,8 +255,10 @@ const Items = () => {
                 <TouchableOpacity
                   key={ind + Math.random()}
                   onPress={() => {
-                    setShowItemUpdateModal(true);
-                    setItemData(i.toJSON());
+                    if (newOrder.status != 'closed') {
+                      setShowItemUpdateModal(true);
+                      setItemData(i.toJSON());
+                    }
                   }}>
                   <View
                     style={[
