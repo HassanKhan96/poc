@@ -11,6 +11,7 @@ import AddTableModal from '../../components/AddTableModal';
 import TableOptionsModal from '../../components/TableOptionsModal';
 import UpdateTableModal from '../../components/UpdateTableModal';
 import TableCoverModal from '../../components/TableCoverModal';
+import {useNavigation} from '@react-navigation/native';
 const Tables = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showOptionsModal, setShowOptionsModal] = useState({
@@ -25,6 +26,7 @@ const Tables = () => {
   const {useRealm, useQuery} = realmContext;
   const user = useUser();
   const realm = useRealm();
+  const navigation = useNavigation();
 
   const tables = useQuery(Table)
     .filtered(`userId == "${user?.id}"`)
@@ -39,10 +41,14 @@ const Tables = () => {
   const addTable = useCallback(
     title => {
       realm.write(() => {
-        return new Table(realm, {
-          userId: user?.id,
-          title,
-        });
+        realm.create(
+          'Table',
+          {
+            userId: user?.id,
+            title,
+          },
+          true,
+        );
       });
       setShowAddModal(false);
     },
@@ -75,6 +81,18 @@ const Tables = () => {
     },
     [realm, user],
   );
+
+  const onCardPress = (table, order) => {
+    if (order && order.isConfirmed) {
+      navigation.navigate('Cover', {
+        name: table?.title,
+        table,
+        order,
+      });
+    } else {
+      setShowCoverModal({status: true, table});
+    }
+  };
 
   return (
     <>
@@ -116,12 +134,14 @@ const Tables = () => {
           }}
         />
         {tables.map((table, index) => {
+          let openOrders = table.orders.filtered('isConfirmed == $0', true)[0];
           return (
             <TableComponent
+              order={openOrders}
               key={table?._id}
               title={table?.title}
               onLongPress={() => setShowOptionsModal({status: true, table})}
-              onPress={() => setShowCoverModal({status: true, table})}
+              onPress={() => onCardPress(table, openOrders)}
             />
           );
         })}

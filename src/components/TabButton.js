@@ -3,7 +3,12 @@ import {IconButton, Text} from 'react-native-paper';
 import globalColors from '../styles/colors';
 const TabButton = ({name, title, disabled = false, onPress = () => null}) => {
   return (
-    <Pressable onPress={onPress}>
+    <Pressable
+      onPress={() => {
+        if (!disabled) {
+          onPress();
+        }
+      }}>
       <View style={{justifyContent: 'center', alignItems: 'center'}}>
         <IconButton
           style={{margin: 0, padding: 0}}

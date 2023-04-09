@@ -5,7 +5,7 @@ const menuStyles = StyleSheet.create({
   container: {
     flex: 1,
     overflow: 'hidden',
-    paddingHorizontal: 15,
+    paddingHorizontal: 20,
     paddingTop: 10,
     backgroundColor: globalColors.secondary,
   },
@@ -37,7 +37,6 @@ const menuStyles = StyleSheet.create({
 
   itemCard: {
     marginVertical: 5,
-    marginHorizontal: 5,
     paddingVertical: 10,
     paddingHorizontal: 10,
     backgroundColor: globalColors.white,

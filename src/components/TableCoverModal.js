@@ -4,7 +4,7 @@ import {View} from 'react-native';
 import {Button, Card, Modal, Portal} from 'react-native-paper';
 import coverTableStyles from '../screens/cover-table/styles';
 import globalColors from '../styles/colors';
-import CounterField from './CounterField';
+import CounterField from '../components/CounterField';
 import {realmContext} from '../context/RealmContext';
 import {useUser} from '@realm/react';
 import {Order} from '../schema/orderSchema';
@@ -35,7 +35,6 @@ const TableCoverModal = ({visible, onDismiss, table = null}) => {
         navigation.navigate('Cover', {
           name: table?.title,
           table,
-          coverCount,
           order,
         });
         onDismiss();
