@@ -11,12 +11,13 @@ import {
 import {FlatList, View} from 'react-native';
 import menuStyles from './styles';
 import globalColors from '../../styles/colors';
-import {memo, useCallback, useEffect, useState} from 'react';
+import {memo, useCallback, useContext, useEffect, useState} from 'react';
 import {useUser} from '@realm/react';
 import {realmContext} from '../../context/RealmContext';
 import {CategoryModal} from '../../schema/categorySchema';
 import CustomModal from '../../components/Modal';
 import SnackMessage from '../../components/SnackMessage';
+import ProfileContext from '../../context/profileContext';
 
 const Category = () => {
   const {useRealm, useQuery} = realmContext;
@@ -29,6 +30,7 @@ const Category = () => {
   const [updateValue, setUpdateValue] = useState('');
   const [update, setUpdate] = useState({status: false, data: null});
   const [alert, setAlert] = useState({message: '', status: false});
+  const {profile} = useContext(ProfileContext);
 
   useEffect(() => {
     realm.subscriptions.update(mutableSubs => {
@@ -144,23 +146,25 @@ const Category = () => {
         </Modal>
       </Portal>
 
-      <View style={menuStyles.categoryField}>
-        <TextInput
-          mode="outlined"
-          style={{backgroundColor: globalColors.white, fontSize: 13}}
-          label="Add Category"
-          outlineColor={globalColors.gray}
-          value={newCategory}
-          onChangeText={text => setNewCategory(text)}
-          right={
-            <TextInput.Icon
-              icon="plus-box"
-              iconColor={globalColors.green}
-              onPress={() => addCategory(newCategory)}
-            />
-          }
-        />
-      </View>
+      {profile.managerMode ? (
+        <View style={menuStyles.categoryField}>
+          <TextInput
+            mode="outlined"
+            style={{backgroundColor: globalColors.white, fontSize: 13}}
+            label="Add Category"
+            outlineColor={globalColors.gray}
+            value={newCategory}
+            onChangeText={text => setNewCategory(text)}
+            right={
+              <TextInput.Icon
+                icon="plus-box"
+                iconColor={globalColors.green}
+                onPress={() => addCategory(newCategory)}
+              />
+            }
+          />
+        </View>
+      ) : null}
       <Card.Content
         style={{
           paddingLeft: 0,
@@ -184,20 +188,26 @@ const Category = () => {
                       style={{
                         flexDirection: 'row',
                       }}>
-                      <IconButton
-                        icon={'pencil'}
-                        style={menuStyles.itemActionBtn}
-                        size={20}
-                        iconColor={globalColors.primary}
-                        onPress={() => setUpdate({status: true, data: item})}
-                      />
-                      <IconButton
-                        size={20}
-                        icon={'trash-can'}
-                        style={menuStyles.itemActionBtn}
-                        iconColor={globalColors.danger}
-                        onPress={() => deleteCategory(item?._id)}
-                      />
+                      {profile.managerMode ? (
+                        <>
+                          <IconButton
+                            icon={'pencil'}
+                            style={menuStyles.itemActionBtn}
+                            size={20}
+                            iconColor={globalColors.primary}
+                            onPress={() =>
+                              setUpdate({status: true, data: item})
+                            }
+                          />
+                          <IconButton
+                            size={20}
+                            icon={'trash-can'}
+                            style={menuStyles.itemActionBtn}
+                            iconColor={globalColors.danger}
+                            onPress={() => deleteCategory(item?._id)}
+                          />
+                        </>
+                      ) : null}
                     </View>
                   </View>
                 </View>

@@ -100,106 +100,121 @@ const AddItems = () => {
         message={alert.message}
         onClose={() => setAlert({message: '', status: false})}
       />
-      {
-        newOrder.status !='closed'?
+      {newOrder.status != 'closed' ? (
         <>
-      <View style={menuStyles.categoryField}>
-        <TextInput
-          mode="outlined"
-          style={{backgroundColor: globalColors.white, fontSize: 13}}
-          label="Search"
-          value={search}
-          onChangeText={text => setSearch(text)}
-          outlineColor={globalColors.gray}
-          left={<TextInput.Icon icon="magnify" iconColor={globalColors.gray} />}
-        />
-      </View>
-      <View style={menuStyles.itemFilterContainer}>
-        <Text variant="labelLarge">Category</Text>
-        <Pressable onPress={() => setShowMenu(true)}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              height: 30,
-              minWidth: 100,
-            }}>
-            <Text variant="labelMedium" style={{marginRight: 5}}>
-              {filterCategory}
-            </Text>
-            <Menu
-              visible={showMenu}
-              anchor={
-                <Pressable onPress={() => setShowMenu(true)}>
-                  <Icon
-                    name="caretdown"
-                    size={18}
-                    color={globalColors.gray800}
-                  />
-                </Pressable>
+          <View style={menuStyles.categoryField}>
+            <TextInput
+              mode="outlined"
+              style={{backgroundColor: globalColors.white, fontSize: 13}}
+              label="Search"
+              value={search}
+              onChangeText={text => setSearch(text)}
+              outlineColor={globalColors.gray}
+              left={
+                <TextInput.Icon icon="magnify" iconColor={globalColors.gray} />
               }
-              onDismiss={() => setShowMenu(false)}>
-              <Menu.Item title="All" onPress={() => onSelectCategory('All')} />
-              {categories.map(category => {
-                return (
-                  <Menu.Item
-                    key={category?._id}
-                    title={category?.name}
-                    onPress={() => onSelectCategory(category?.name)}
-                  />
-                );
-              })}
-            </Menu>
+            />
           </View>
-        </Pressable>
-      </View>
-      <Card.Content style={{flex: 1, paddingLeft: 0, paddingRight: 0}}>
-        <FlatList
-          data={menuItems}
+          <View style={menuStyles.itemFilterContainer}>
+            <Text variant="labelLarge">Category</Text>
+            <Pressable onPress={() => setShowMenu(true)}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'flex-end',
+                  height: 30,
+                  minWidth: 100,
+                }}>
+                <Text variant="labelMedium" style={{marginRight: 5}}>
+                  {filterCategory}
+                </Text>
+                <Menu
+                  visible={showMenu}
+                  anchor={
+                    <Pressable onPress={() => setShowMenu(true)}>
+                      <Icon
+                        name="caretdown"
+                        size={18}
+                        color={globalColors.gray800}
+                      />
+                    </Pressable>
+                  }
+                  onDismiss={() => setShowMenu(false)}>
+                  <Menu.Item
+                    title="All"
+                    onPress={() => onSelectCategory('All')}
+                  />
+                  {categories.map(category => {
+                    return (
+                      <Menu.Item
+                        key={category?._id}
+                        title={category?.name}
+                        onPress={() => onSelectCategory(category?.name)}
+                      />
+                    );
+                  })}
+                </Menu>
+              </View>
+            </Pressable>
+          </View>
+          <Card.Content style={{flex: 1, paddingLeft: 0, paddingRight: 0}}>
+            <FlatList
+              data={menuItems}
+              style={{
+                flex: 1,
+              }}
+              showsVerticalScrollIndicator={true}
+              columnWrapperStyle={{
+                justifyContent: 'space-evenly',
+                flex: 1,
+                alignItems: 'stretch',
+              }}
+              numColumns={2}
+              renderItem={({item, index}) => {
+                return (
+                  <TouchableOpacity onPress={() => onSelectItem(item)}>
+                    <Card
+                      style={[menuStyles.itemCard, {minWidth: 150}]}
+                      mode="contained">
+                      <View style={menuStyles.itemContainer}>
+                        <View style={menuStyles.itemInfoContainer}>
+                          <Text variant="titleSmall">{item?.name}</Text>
+
+                          <Text
+                            style={{marginBottom: 10}}
+                            variant="labelMedium">
+                            Price: £{item?.price}
+                          </Text>
+
+                          <Text
+                            variant="bodySmall"
+                            style={{color: globalColors.darkGray}}>
+                            {item?.category?.name}
+                          </Text>
+                        </View>
+                      </View>
+                    </Card>
+                  </TouchableOpacity>
+                );
+              }}
+              keyExtractor={item => item._id}
+            />
+          </Card.Content>
+        </>
+      ) : (
+        <Card.Content
           style={{
+            marginTop: 20,
+            justifyContent: 'flex-start',
+            alignItems: 'center',
             flex: 1,
-          }}
-          showsVerticalScrollIndicator={true}
-          columnWrapperStyle={{
-            justifyContent: 'space-between',
-            flex: 1,
-          }}
-          numColumns={2}
-          renderItem={({item, index}) => {
-            return (
-              <TouchableOpacity onPress={() => onSelectItem(item)}>
-                <Card
-                  style={[menuStyles.itemCard, {width: 150}]}
-                  mode="contained">
-                  <View style={menuStyles.itemContainer}>
-                    <View style={menuStyles.itemInfoContainer}>
-                      <Text variant="titleSmall">{item?.name}</Text>
-
-                      <Text style={{marginBottom: 10}} variant="labelMedium">
-                        Price: £{item?.price}
-                      </Text>
-
-                      <Text
-                        variant="bodySmall"
-                        style={{color: globalColors.darkGray}}>
-                        {item?.category?.name}
-                      </Text>
-                    </View>
-                  </View>
-                </Card>
-              </TouchableOpacity>
-            );
-          }}
-          keyExtractor={item => item._id}
-        />
-      </Card.Content>
-      </>
-      :
-      <Card.Content style={{ marginTop: 20, justifyContent: 'flex-start', alignItems: 'center', flex: 1}}>
-        <Text style={{ color: globalColors.darkGray}} variant='titleMedium'>This order has been closed</Text>
-      </Card.Content>
-}
+          }}>
+          <Text style={{color: globalColors.darkGray}} variant="titleMedium">
+            This order has been closed
+          </Text>
+        </Card.Content>
+      )}
     </View>
   );
 };

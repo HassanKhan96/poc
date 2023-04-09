@@ -42,9 +42,10 @@ const renderTabBar = props => (
 );
 
 const CoverTable = ({route}) => {
+  console.log(route.params);
   const [index, setIndex] = useState(0);
   const [order, setOrder] = useState({
-    orderId: route.params?.order?._id,
+    orderId: route.params?.order?._id ? route.params?.order?._id : nulls,
     tableId: route.params.table._id,
   });
   const [routes] = useState([
@@ -59,10 +60,9 @@ const CoverTable = ({route}) => {
   const user = useUser();
 
   const value = useMemo(() => ({order, setOrder}), [order]);
-  const existingOrder = realm.objectForPrimaryKey(
-    Order,
-    route.params?.order?._id,
-  );
+  let existingOrder = null;
+  if (route.params?.order?._id)
+    existingOrder = realm.objectForPrimaryKey(Order, route.params?.order?._id);
   const existingTable = realm.objectForPrimaryKey(
     Table,
     route.params?.table?._id,
@@ -90,12 +90,12 @@ const CoverTable = ({route}) => {
   };
 
   const onDiscard = () => {
-    
     realm.write(() => {
-      navigation.goBack()
-      realm.delete(existingOrder);
-  });
-    
+      let order = realm.objectForPrimaryKey(Order, existingOrder._id);
+      navigation.goBack();
+      realm.delete(order);
+    });
+
     realm.syncSession.resume();
   };
 

@@ -11,7 +11,7 @@ import {
 import {FlatList, Pressable, View} from 'react-native';
 import menuStyles from './styles';
 import globalColors from '../../styles/colors';
-import {useState, memo, useEffect, useCallback} from 'react';
+import {useState, memo, useEffect, useCallback, useContext} from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
 import CustomModal from '../../components/Modal';
 import ItemModal from '../../components/ItemModal';
@@ -20,6 +20,7 @@ import {CategoryModal} from '../../schema/categorySchema';
 import {useUser} from '@realm/react';
 import {Item} from '../../schema/Item';
 import SnackMessage from '../../components/SnackMessage';
+import ProfileContext from '../../context/profileContext';
 
 const MenuItems = () => {
   const {useRealm, useQuery} = realmContext;
@@ -33,7 +34,7 @@ const MenuItems = () => {
   const [filterQuery, setFilterQuery] = useState(itemQuery);
   const [updates, setUpdates] = useState(null);
   const [alert, setAlert] = useState({message: '', status: false});
-
+  const {profile} = useContext(ProfileContext);
   const categories = realm
     .objects(CategoryModal)
     .filtered('userId == $0', user.id);
@@ -145,6 +146,8 @@ const MenuItems = () => {
     else addItem(values);
   };
 
+  console.log(profile);
+
   return (
     <View style={menuStyles.container}>
       <SnackMessage
@@ -162,13 +165,16 @@ const MenuItems = () => {
         onSubmit={(values, id = null) => onSubmit(values, id)}
         updates={updates}
       />
-      <Button
-        mode="contained"
-        icon="plus"
-        style={{marginVertical: 10}}
-        onPress={() => setShowItemModal(true)}>
-        Add New Item
-      </Button>
+
+      {profile.managerMode ? (
+        <Button
+          mode="contained"
+          icon="plus"
+          style={{marginVertical: 10}}
+          onPress={() => setShowItemModal(true)}>
+          Add New Item
+        </Button>
+      ) : null}
       <View style={menuStyles.categoryField}>
         <TextInput
           mode="outlined"
@@ -249,23 +255,27 @@ const MenuItems = () => {
                       {item?.category?.name}
                     </Text>
                     <View style={{flexDirection: 'row'}}>
-                      <IconButton
-                        icon={'pencil'}
-                        style={menuStyles.itemActionBtn}
-                        size={20}
-                        iconColor={globalColors.primary}
-                        onPress={() => {
-                          setUpdates(item);
-                          setShowItemModal(true);
-                        }}
-                      />
-                      <IconButton
-                        size={20}
-                        icon={'trash-can'}
-                        style={menuStyles.itemActionBtn}
-                        iconColor={globalColors.danger}
-                        onPress={() => deleteItem(item._id)}
-                      />
+                      {profile.managerMode ? (
+                        <>
+                          <IconButton
+                            icon={'pencil'}
+                            style={menuStyles.itemActionBtn}
+                            size={20}
+                            iconColor={globalColors.primary}
+                            onPress={() => {
+                              setUpdates(item);
+                              setShowItemModal(true);
+                            }}
+                          />
+                          <IconButton
+                            size={20}
+                            icon={'trash-can'}
+                            style={menuStyles.itemActionBtn}
+                            iconColor={globalColors.danger}
+                            onPress={() => deleteItem(item._id)}
+                          />
+                        </>
+                      ) : null}
                     </View>
                   </View>
                 </View>

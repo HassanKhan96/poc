@@ -1,5 +1,5 @@
 import {useUser} from '@realm/react';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Button} from 'react-native-paper';
 import globalColors from '../../styles/colors';
@@ -12,6 +12,7 @@ import TableOptionsModal from '../../components/TableOptionsModal';
 import UpdateTableModal from '../../components/UpdateTableModal';
 import TableCoverModal from '../../components/TableCoverModal';
 import {useNavigation} from '@react-navigation/native';
+import ProfileContext from '../../context/profileContext';
 const Tables = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showOptionsModal, setShowOptionsModal] = useState({
@@ -27,6 +28,7 @@ const Tables = () => {
   const user = useUser();
   const realm = useRealm();
   const navigation = useNavigation();
+  const {profile} = useContext(ProfileContext);
 
   const tables = useQuery(Table)
     .filtered(`userId == "${user?.id}"`)
@@ -96,13 +98,15 @@ const Tables = () => {
 
   return (
     <>
-      <Button
-        mode="contained"
-        icon={'plus'}
-        style={{margin: 10}}
-        onPress={() => setShowAddModal(true)}>
-        Add Table
-      </Button>
+      {profile.managerMode ? (
+        <Button
+          mode="contained"
+          icon={'plus'}
+          style={{margin: 10}}
+          onPress={() => setShowAddModal(true)}>
+          Add Table
+        </Button>
+      ) : null}
       <View style={[tableStyles.tableContainer, {...styles.container}]}>
         <AddTableModal
           visible={showAddModal}
@@ -140,7 +144,10 @@ const Tables = () => {
               order={openOrders}
               key={table?._id}
               title={table?.title}
-              onLongPress={() => setShowOptionsModal({status: true, table})}
+              onLongPress={() => {
+                if (profile.managerMode)
+                  setShowOptionsModal({status: true, table});
+              }}
               onPress={() => onCardPress(table, openOrders)}
             />
           );
