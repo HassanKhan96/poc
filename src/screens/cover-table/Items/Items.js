@@ -166,7 +166,7 @@ const Items = () => {
             <Text
               variant="titleMedium"
               style={{fontWeight: '500', color: globalColors.gray800}}>
-              £ 0.00
+              £ {newOrder.discount}
             </Text>
           </View>
           <View style={itemsTabStyle.itemAmountRow}>
