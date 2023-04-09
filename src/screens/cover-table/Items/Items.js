@@ -110,6 +110,7 @@ const Items = () => {
             order => order._id.toHexString() !== newOrder._id.toHexString(),
           );
       });
+      navigation.goBack();
       setAlert({message: '', status: false});
     } catch (error) {
       console.log(error);
