@@ -100,6 +100,9 @@ const AddItems = () => {
         message={alert.message}
         onClose={() => setAlert({message: '', status: false})}
       />
+      {
+        newOrder.status !='closed'?
+        <>
       <View style={menuStyles.categoryField}>
         <TextInput
           mode="outlined"
@@ -191,6 +194,12 @@ const AddItems = () => {
           keyExtractor={item => item._id}
         />
       </Card.Content>
+      </>
+      :
+      <Card.Content style={{ marginTop: 20, justifyContent: 'flex-start', alignItems: 'center', flex: 1}}>
+        <Text style={{ color: globalColors.darkGray}} variant='titleMedium'>This order has been closed</Text>
+      </Card.Content>
+}
     </View>
   );
 };

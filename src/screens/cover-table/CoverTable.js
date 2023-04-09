@@ -70,7 +70,7 @@ const CoverTable = ({route}) => {
 
   useEffect(() => {
     navigation.addListener('beforeRemove', e => {
-      if (existingOrder.isConfirmed) return;
+      if (existingOrder?.isConfirmed) return;
       e.preventDefault();
 
       setAlert({
@@ -90,12 +90,13 @@ const CoverTable = ({route}) => {
   };
 
   const onDiscard = () => {
+    
     realm.write(() => {
+      navigation.goBack()
       realm.delete(existingOrder);
-    });
-
+  });
+    
     realm.syncSession.resume();
-    navigation.goBack();
   };
 
   const onCancel = () => {

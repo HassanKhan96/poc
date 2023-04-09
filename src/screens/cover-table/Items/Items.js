@@ -1,31 +1,31 @@
-import {useContext, memo, useState} from 'react';
-import {TouchableOpacity, View} from 'react-native';
-import {Button, Card, Dialog, Portal, Text} from 'react-native-paper';
+import { useContext, memo, useState } from 'react';
+import { TouchableOpacity, View } from 'react-native';
+import { Button, Card, Dialog, Portal, Text } from 'react-native-paper';
 import TabButton from '../../../components/TabButton';
 import OrderContext from '../../../context/orderContext';
 import globalColors from '../../../styles/colors';
 import defaultStyles from '../../../styles/defualt.styles';
 import itemsTabStyle from './styles';
-import {realmContext} from '../../../context/RealmContext';
-import {useUser} from '@realm/react';
-import {Order} from '../../../schema/orderSchema';
-import {Table} from '../../../schema/tableSchema';
-import {useNavigation} from '@react-navigation/native';
+import { realmContext } from '../../../context/RealmContext';
+import { useUser } from '@realm/react';
+import { Order } from '../../../schema/orderSchema';
+import { Table } from '../../../schema/tableSchema';
+import { useNavigation } from '@react-navigation/native';
 import UpdateOrderItem from './UpdateOrderItem';
 import OrderPayment from './OrderPayment';
 import OrderDiscount from './OrderDiscount';
 import AlertDialog from '../../../components/AlertDialog';
 
 const Items = () => {
-  const {useRealm, useQuery} = realmContext;
+  const { useRealm, useQuery } = realmContext;
   const realm = useRealm();
   const user = useUser();
   const navigation = useNavigation();
-  const {order, setOrder} = useContext(OrderContext);
+  const { order, setOrder } = useContext(OrderContext);
   const [showItemUpdateModal, setShowItemUpdateModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showDiscountModal, setShowDiscountModal] = useState(false);
-  const [alert, setAlert] = useState({message: '', status: false});
+  const [alert, setAlert] = useState({ message: '', status: false });
   const [itemData, setItemData] = useState(null);
   let newOrder = useQuery(Order).filtered(
     `_id == $0 AND tableId == "${order.tableId}" AND userId == "${user.id}"`,
@@ -111,11 +111,12 @@ const Items = () => {
           );
       });
       navigation.goBack();
-      setAlert({message: '', status: false});
+      setAlert({ message: '', status: false });
     } catch (error) {
       console.log(error);
     }
   };
+
 
   return (
     <View style={[defaultStyles.container, itemsTabStyle.container]}>
@@ -146,7 +147,7 @@ const Items = () => {
         message={alert.message}
         visible={alert.status}
         onConfirm={closeOrder}
-        onDiscard={() => setAlert({message: '', status: false})}
+        onDiscard={() => setAlert({ message: '', status: false })}
       />
       <Card style={itemsTabStyle.itemsContainer}>
         <Card.Content>
@@ -156,7 +157,7 @@ const Items = () => {
             </Text>
             <Text
               variant="titleMedium"
-              style={{fontWeight: '500', color: globalColors.gray800}}>
+              style={{ fontWeight: '500', color: globalColors.gray800 }}>
               £ {newOrder?.billAmount}
             </Text>
           </View>
@@ -166,7 +167,7 @@ const Items = () => {
             </Text>
             <Text
               variant="titleMedium"
-              style={{fontWeight: '500', color: globalColors.gray800}}>
+              style={{ fontWeight: '500', color: globalColors.gray800 }}>
               £ {newOrder.discount}
             </Text>
           </View>
@@ -176,7 +177,7 @@ const Items = () => {
             </Text>
             <Text
               variant="titleMedium"
-              style={{fontWeight: '500', color: globalColors.gray800}}>
+              style={{ fontWeight: '500', color: globalColors.gray800 }}>
               £ {newOrder?.amountReceived}
             </Text>
           </View>
@@ -186,7 +187,7 @@ const Items = () => {
             </Text>
             <Text
               variant="titleMedium"
-              style={{fontWeight: '500', color: globalColors.gray800}}>
+              style={{ fontWeight: '500', color: globalColors.gray800 }}>
               £ {newOrder.amountPayable}
             </Text>
           </View>
@@ -241,8 +242,7 @@ const Items = () => {
                 })
               }
               disabled={
-                (!newOrder.isConfirmed || newOrder.status === 'closed') &&
-                newOrder.amountPayable >= 0
+                !newOrder.isConfirmed || newOrder.status == 'closed' || newOrder.amountPayable >0
               }
             />
           </View>
@@ -264,7 +264,7 @@ const Items = () => {
                   <View
                     style={[
                       itemsTabStyle.itemAmountRow,
-                      {paddingVertical: 15},
+                      { paddingVertical: 15 },
                     ]}>
                     <Text
                       variant="titleMedium"
@@ -273,7 +273,7 @@ const Items = () => {
                     </Text>
                     <Text
                       variant="titleMedium"
-                      style={{fontWeight: '500', color: globalColors.gray800}}>
+                      style={{ fontWeight: '500', color: globalColors.gray800 }}>
                       £ {parseFloat(i.item.price * i.quantity).toFixed(2)}
                     </Text>
                   </View>

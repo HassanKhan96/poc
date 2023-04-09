@@ -1,13 +1,10 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import Tables from '../../screens/table/Tables';
 import Icons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {fontSize} from '@mui/system';
-import {Text, Button} from 'react-native-paper';
+import { Button} from 'react-native-paper';
 import Menu from '../../screens/menu/Menu';
 import {useUser} from '@realm/react';
-import Order from '../../screens/order/Order';
+import Orders from '../../screens/order/Orders';
 import Profile from '../../screens/profile/Profile';
-import globalColors from '../../styles/colors';
 import TableNavigator from './TableNavigator';
 
 const Tab = createBottomTabNavigator();
@@ -38,7 +35,7 @@ const TabNavigator = () => {
       />
       <Tab.Screen
         name="Orders"
-        component={Order}
+        component={Orders}
         options={{
           tabBarLabelStyle: {fontSize: 14},
           tabBarIcon: ({color, size}) => (
