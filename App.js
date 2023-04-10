@@ -21,6 +21,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import TabNavigator from './src/navigation/navigators/TabNavigator';
 import Loading from './src/components/Loading';
 import ProfileContext from './src/context/profileContext';
+import {LogBox} from 'react-native';
 
 const {RealmProvider} = realmContext;
 const theme = {
@@ -34,6 +35,7 @@ const theme = {
 };
 
 const AppWrapper = () => {
+  LogBox.ignoreAllLogs(); //Ignore all log notifications
   return (
     <PaperProvider theme={theme}>
       <AppProvider id={config.appId} baseUrl={config.baseUrl}>

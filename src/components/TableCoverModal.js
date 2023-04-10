@@ -31,15 +31,15 @@ const TableCoverModal = ({visible, onDismiss, table = null}) => {
           cover: coverCount,
           userId: user.id,
         });
-
+        onDismiss();
         navigation.navigate('Cover', {
           name: table?.title,
           table,
           order,
         });
-        onDismiss();
-        setCoverCount(0);
       });
+
+      setCoverCount(0);
     }
   };
   return (

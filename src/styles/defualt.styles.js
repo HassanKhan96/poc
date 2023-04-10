@@ -1,5 +1,7 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet, Dimensions} from 'react-native';
 import globalColors from './colors';
+const width = Dimensions.get('window').width;
+const height = Dimensions.get('window').width;
 
 const defaultStyles = StyleSheet.create({
   container: {

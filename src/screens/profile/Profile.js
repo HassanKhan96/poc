@@ -102,11 +102,11 @@ const Profile = () => {
             />
           )}
         />
-        <List.Item
+        {/* <List.Item
           style={profileStyles.itemContainer}
           title="Second Item"
           left={() => <List.Icon color={globalColors.gray800} icon="folder" />}
-        />
+        /> */}
       </List.Section>
     </View>
   );

@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useState} from 'react';
 import {Button, Dialog, Portal, Text} from 'react-native-paper';
-import {useWindowDimensions} from 'react-native';
+import {useWindowDimensions, Alert} from 'react-native';
 import AddItems from './Menu/AddItems';
 import Details from './Details';
 import Items from './Items/Items';
@@ -42,17 +42,22 @@ const renderTabBar = props => (
 );
 
 const CoverTable = ({route}) => {
-  console.log(route.params);
   const [index, setIndex] = useState(0);
   const [order, setOrder] = useState({
-    orderId: route.params?.order?._id ? route.params?.order?._id : nulls,
+    orderId: route.params?.order?._id,
     tableId: route.params.table._id,
   });
   const [routes] = useState([
     {key: 'items', title: 'Items'},
     {key: 'addItems', title: 'Add Items'},
   ]);
-  const [alert, setAlert] = useState({status: false, message: ''});
+  const [alert, setAlert] = useState({
+    status: false,
+    message: '',
+    onCancel: () => null,
+    onConfirm: () => null,
+    onDiscard: () => null,
+  });
   const layout = useWindowDimensions();
   const navigation = useNavigation();
   const {useRealm, useQuery} = realmContext;
@@ -61,7 +66,7 @@ const CoverTable = ({route}) => {
 
   const value = useMemo(() => ({order, setOrder}), [order]);
   let existingOrder = null;
-  if (route.params?.order?._id)
+  if (route.params?.order)
     existingOrder = realm.objectForPrimaryKey(Order, route.params?.order?._id);
   const existingTable = realm.objectForPrimaryKey(
     Table,
@@ -69,15 +74,20 @@ const CoverTable = ({route}) => {
   );
 
   useEffect(() => {
-    navigation.addListener('beforeRemove', e => {
+    let backListener = navigation.addListener('beforeRemove', e => {
+      console.log('listener', existingOrder);
       if (existingOrder?.isConfirmed) return;
       e.preventDefault();
 
       setAlert({
         message: 'Order is not confirm, Do you want to confirm order?',
         status: true,
+        onCancel: () => onCancel(e),
+        onDiscard: () => onDiscard(e),
+        onConfirm: () => onConfirm(e),
       });
     });
+    return () => backListener();
   }, [navigation]);
 
   const onConfirm = () => {
@@ -89,14 +99,13 @@ const CoverTable = ({route}) => {
     navigation.goBack();
   };
 
-  const onDiscard = () => {
+  const onDiscard = e => {
     realm.write(() => {
       let order = realm.objectForPrimaryKey(Order, existingOrder._id);
-      navigation.goBack();
       realm.delete(order);
     });
-
     realm.syncSession.resume();
+    navigation.dispatch(e.data.action);
   };
 
   const onCancel = () => {
@@ -115,9 +124,9 @@ const CoverTable = ({route}) => {
             <Text variant="bodyMedium">{alert.message}</Text>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={onConfirm}>Yes</Button>
-            <Button onPress={onDiscard}>No</Button>
-            <Button onPress={onCancel}>Cancel</Button>
+            <Button onPress={() => alert.onConfirm()}>Yes</Button>
+            <Button onPress={() => alert.onDiscard()}>No</Button>
+            <Button onPress={() => alert.onCancel()}>Cancel</Button>
           </Dialog.Actions>
         </Dialog>
       </Portal>
