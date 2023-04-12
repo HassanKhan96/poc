@@ -29,6 +29,7 @@ const Profile = () => {
     User,
     Realm.BSON.ObjectId(user.id),
   );
+  console.log(user.id);
 
   const onSwitchChange = () => {
     if (!profile.managerMode) setShowManagerModal(true);
@@ -43,11 +44,11 @@ const Profile = () => {
     setShowManagerModal(false);
     setPin('');
   };
-  // useEffect(() => {
-  //   realm.subscriptions.update(mutableSubs => {
-  //     mutableSubs.add(realm.objects(User), {name: 'Users'});
-  //   });
-  // }, [realm, user]);
+  useEffect(() => {
+    realm.subscriptions.update(mutableSubs => {
+      mutableSubs.add(realm.objects(User), {name: 'Users'});
+    });
+  }, [realm, user]);
 
   // useEffect(() => {
   //   realm.write(() => {
@@ -57,7 +58,6 @@ const Profile = () => {
   //     });
   //   });
   // }, []);
-  console.log(profile);
   return (
     <View>
       <Portal>
@@ -74,6 +74,7 @@ const Profile = () => {
                 mode="outlined"
                 label="Enter Pin"
                 outlineColor={globalColors.primary}
+                keyboardType="number-pad"
               />
               <View style={{marginTop: 15}}>
                 {pin ? (
